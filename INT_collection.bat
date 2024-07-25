@@ -3,7 +3,7 @@ setlocal enabledelayedexpansion
  
 cd /d "%~dp0"
  
-set "collections=INT_Portfolio_Geo_Spider_Number_check_23511_OM_2212_Fleet_Copy.json INT_Portfolio_Geo_Spider_Number_check_HCC_MRN_ALL_Copy.json"
+set "collections=SIMPLICIALLpostmancollectionNewman.json SIMPLICIALLpostmancollectionNewman.json"
 set "failed=0"
  
 :: Create/empty the report file
