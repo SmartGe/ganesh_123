@@ -1,0 +1,3530 @@
+{
+	"info": {
+		"_postman_id": "2a9e60c4-0824-4b1a-926d-ed2e889d2a83",
+		"name": "SIMPLICI ALL",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "36244041"
+	},
+	"item": [
+		{
+			"name": "1.Getting Started with Simplici",
+			"item": [
+				{
+					"name": "1.1. Generating Access Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsondata = pm.response.json();",
+									"pm.environment.set(\"access_token\", jsondata.access_token);",
+									"",
+									"pm.test(\"Response status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"",
+									"pm.test(\"Content-Type header is application/json\", function () {",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"});",
+									"",
+									"",
+									"pm.test(\"Response time is within an acceptable range\", function () {",
+									"  pm.expect(pm.response.responseTime).to.be.below(1000);",
+									"});",
+									"",
+									"",
+									"pm.test(\"Response has the required fields\", function () {",
+									"    const responseData = pm.response.json();",
+									"    ",
+									"    pm.expect(responseData).to.be.an('object');",
+									"    pm.expect(responseData.access_token).to.exist;",
+									"    pm.expect(responseData.token_type).to.exist;",
+									"    pm.expect(responseData.refresh_token).to.exist;",
+									"    pm.expect(responseData.expires_in).to.exist;",
+									"});",
+									"",
+									"",
+									"pm.test(\"Access token and refresh token are non-empty strings\", function () {",
+									"    const responseData = pm.response.json();",
+									"    ",
+									"    pm.expect(responseData.access_token).to.be.a('string').and.to.have.lengthOf.at.least(1, \"Access token should not be empty\");",
+									"    pm.expect(responseData.refresh_token).to.be.a('string').and.to.have.lengthOf.at.least(1, \"Refresh token should not be empty\");",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"client_id\": \"e0f056f2bddf4d32960551b4d1b078ec\",\r\n  \"client_secret\": \"486b3f6c1ba452f54248098424148c0fb5343970e4f5ceed155fd2359a168e41\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.beta.satschel.com/v2/auth/session-tokens",
+							"protocol": "https",
+							"host": [
+								"api",
+								"beta",
+								"satschel",
+								"com"
+							],
+							"path": [
+								"v2",
+								"auth",
+								"session-tokens"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "1.2. Refreshing the Access Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status code is 400\", function () {",
+									"    pm.expect(pm.response.code).to.equal(400);",
+									"});",
+									"",
+									"",
+									"pm.test(\"Response time is less than 1500ms\", function () {",
+									"  pm.expect(pm.response.responseTime).to.be.below(1500);",
+									"});",
+									"",
+									"",
+									"pm.test(\"Response content type is application/json\", function () {",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"});",
+									"",
+									"",
+									"pm.test(\"Response has the required fields\", function () {",
+									"    const responseData = pm.response.json();",
+									"    ",
+									"    pm.expect(responseData).to.be.an('object');",
+									"    pm.expect(responseData.message).to.exist;",
+									"});",
+									"",
+									"",
+									"pm.test(\"Message is a non-empty string\", function () {",
+									"  const responseData = pm.response.json();",
+									"  ",
+									"  pm.expect(responseData.message).to.be.a('string').and.to.have.lengthOf.at.least(1, \"Message should not be empty\");",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"client_id\": \"e0f056f2bddf4d32960551b4d1b078ec\",\r\n  \"refresh_token\": \"d97f5897605b477fb9d0996054cc43cc-a1b20dd81aef42678142e14b5b8e20fa\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.beta.satschel.com/v2/auth/refresh-token",
+							"protocol": "https",
+							"host": [
+								"api",
+								"beta",
+								"satschel",
+								"com"
+							],
+							"path": [
+								"v2",
+								"auth",
+								"refresh-token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "1.3. Verifying Access Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();\r",
+									" pm.test(\"verify id and client id\", () => {\r",
+									"      pm.expect(jsonData.id).to.eql(\"666bcd8bf47bf59e8fe018bd\");\r",
+									"      pm.expect(jsonData.client_id).to.eql(\"e0f056f2bddf4d32960551b4d1b078ec\");\r",
+									"      })"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "https://api.beta.satschel.com/v2/auth/verify",
+							"protocol": "https",
+							"host": [
+								"api",
+								"beta",
+								"satschel",
+								"com"
+							],
+							"path": [
+								"v2",
+								"auth",
+								"verify"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "2.KYB Basic",
+			"item": [
+				{
+					"name": "2.1 - KYB - Basic.1-Documentation: KYB",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"\r",
+									"var jsonData= pm.response.json();\r",
+									"\r",
+									"pm.test(\"Verify VerifiedInput\",()=>{\r",
+									"   \r",
+									"   var VerifiedInput = jsonData.data.CompanyResults.VerifiedInput;\r",
+									" \r",
+									"   var expectedVerifiedInput =  {\r",
+									"                CompanyName: \"SATSCHEL\",\r",
+									"                Address: {\r",
+									"                    StreetAddress1: \"30 AUGUSTA CANYON WAY\",\r",
+									"                    City: \"LAS VEGAS\",\r",
+									"                    State: \"NV\",\r",
+									"                    Zip5: \"89141\"\r",
+									"                }\r",
+									"            }\r",
+									"   pm.expect(VerifiedInput).to.eql(expectedVerifiedInput)\r",
+									"}),\r",
+									"\r",
+									"pm.test(\"Verify Verification Indicators\",()=>{\r",
+									"   \r",
+									"   var verificationIndicators = jsonData.data.CompanyResults.VerificationIndicators;\r",
+									" \r",
+									"   var expectedIndicators = {\r",
+									"                CompanyName: \"1\",\r",
+									"                StreetAddress: \"1\",\r",
+									"                City: \"1\",\r",
+									"                State: \"1\",\r",
+									"                Zip: \"1\",\r",
+									"                Phone: \"0\",\r",
+									"                FEIN: \"0\"\r",
+									"            }\r",
+									" \r",
+									"   pm.expect(verificationIndicators).to.eql(expectedIndicators)\r",
+									"}),\r",
+									"\r",
+									"pm.test(\"Verify BestInformation\",()=>{\r",
+									"   \r",
+									"   var BestInformation = jsonData.data.CompanyResults.BestInformation;\r",
+									" \r",
+									"   var expectedBestInformation =  {\r",
+									"                \"CompanyName\": \"SATSCHEL LLC\",\r",
+									"                \"Address\": {\r",
+									"                    StreetNumber: \"30\",\r",
+									"                    StreetName: \"AUGUSTA CANYON\",\r",
+									"                    StreetSuffix: \"WAY\",\r",
+									"                    StreetAddress1: \"30 AUGUSTA CANYON WAY\",\r",
+									"                    City: \"LAS VEGAS\",\r",
+									"                    State: \"NV\",\r",
+									"                    Zip5: \"89141\",\r",
+									"                    Zip4: \"6066\"\r",
+									"                },\r",
+									"                Phone: \"4157416782\",\r",
+									"                FEIN: \"863141152\"\r",
+									"            }\r",
+									" \r",
+									"   pm.expect(BestInformation).to.eql(expectedBestInformation)\r",
+									"}),\r",
+									"\r",
+									"pm.test(\"Verify BusinessIds\",()=>{\r",
+									"   \r",
+									"   var BusinessIds = jsonData.data.CompanyResults.BusinessIds;\r",
+									"\r",
+									"    var expectedBusinessIds = {\r",
+									"                DotID: \"0\",\r",
+									"                EmpID: \"0\",\r",
+									"                POWID: \"137588403657\",\r",
+									"                ProxID: \"137588403657\",\r",
+									"                SeleID: \"137588403657\",\r",
+									"                OrgID: \"137588403657\",\r",
+									"                UltID: \"137588403657\"\r",
+									"            }\r",
+									"pm.expect(BusinessIds).to.eql(expectedBusinessIds)\r",
+									"}),\r",
+									"\r",
+									"pm.test(\"Verify BusinessVerification\",()=>{\r",
+									"   \r",
+									"   var BusinessVerification = jsonData.data.CompanyResults.BusinessVerification;\r",
+									"\r",
+									"    var expectedBusinessVerification = {\r",
+									"                Index: \"25\",\r",
+									"                Description: \"Input business street address, city, state, zip and name verified on a business record.\"\r",
+									"            }\r",
+									"   pm.expect(BusinessVerification).to.eql(expectedBusinessVerification)\r",
+									"})\r",
+									"pm.test(\"Verify RiskIndicators\",()=>{\r",
+									"   \r",
+									"   var RiskIndicators = jsonData.data.CompanyResults.RiskIndicators;\r",
+									"\r",
+									"    var expectedRiskIndicators =  {\r",
+									"                \"RiskIndicator\": [\r",
+									"                    {\r",
+									"                        RiskCode: \"21\",\r",
+									"                        Description: \"Unable to verify business TIN on business records\",\r",
+									"                        Sequence: \"1\"\r",
+									"                    },\r",
+									"                    {\r",
+									"                        RiskCode: \"22\",\r",
+									"                        Description: \"Unable to verify business phone number on business records\",\r",
+									"                        Sequence: \"2\"\r",
+									"                    },\r",
+									"                    {\r",
+									"                        RiskCode: \"31\",\r",
+									"                        Description: \"The input business phone number is a mobile number\",\r",
+									"                        Sequence: \"3\"\r",
+									"                    },\r",
+									"                    {\r",
+									"                        RiskCode: \"34\",\r",
+									"                        Description: \"The input business address may be a residential address (single family dwelling)\",\r",
+									"                        Sequence: \"4\"\r",
+									"                    },\r",
+									"                    {\r",
+									"                        RiskCode: \"37\",\r",
+									"                        Description: \"The input business TIN is not found\",\r",
+									"                        Sequence: \"5\"\r",
+									"                    },\r",
+									"                    {\r",
+									"                        RiskCode: \"44\",\r",
+									"                        Description: \"The input business phone number is potentially invalid\",\r",
+									"                        Sequence: \"6\"\r",
+									"                    }\r",
+									"                ]\r",
+									"            }\r",
+									"   pm.expect(RiskIndicators).to.eql(expectedRiskIndicators)\r",
+									"})\r",
+									"\r",
+									"pm.test(\"Verify ResidentialBusinesses\",()=>{\r",
+									"   \r",
+									"   var ResidentialBusinesses = jsonData.data.CompanyResults.ResidentialBusinesses;\r",
+									"\r",
+									"    var expectedResidentialBusinesses =  {\r",
+									"                ResidentialBusiness: [\r",
+									"                    {\r",
+									"                        Indicator: \"2\",\r",
+									"                        Description: \"Potential SOHO\"\r",
+									"                    }\r",
+									"                ]\r",
+									"            }\r",
+									"   pm.expect(ResidentialBusinesses).to.eql(expectedResidentialBusinesses)\r",
+									"})\r",
+									"\r",
+									"pm.test(\"Verify VerificationSummaries\",()=>{\r",
+									"   \r",
+									"   var VerificationSummaries = jsonData.data.CompanyResults.VerificationSummaries;\r",
+									"\r",
+									"    var expectedVerificationSummaries =   {\r",
+									"                \"VerificationSummary\": [\r",
+									"                    {\r",
+									"                        Type: \"PHONESOURCE\",\r",
+									"                        Index: \"0\",\r",
+									"                        Description: \"No business inputs verified on this source\"\r",
+									"                    },\r",
+									"                    {\r",
+									"                        Type: \"BUREAU\",\r",
+									"                        Index: \"0\",\r",
+									"                        Description: \"No business inputs verified on this source\"\r",
+									"                    },\r",
+									"                    {\r",
+									"                        Type: \"GOVTREGISTRATIONS\",\r",
+									"                        Index: \"2\",\r",
+									"                        Description: \"Input Business Name and Address verified\"\r",
+									"                    },\r",
+									"                    {\r",
+									"                        Type: \"PUBLICRECORDFILINGS\",\r",
+									"                        Index: \"0\",\r",
+									"                        Description: \"No business inputs verified on this source\"\r",
+									"                    },\r",
+									"                    {\r",
+									"                        Type: \"BUSDIRECTORIES\",\r",
+									"                        Index: \"0\",\r",
+									"                        Description: \"No business inputs verified on this source\"\r",
+									"                    }\r",
+									"                ]\r",
+									"            }\r",
+									"   pm.expect(VerificationSummaries).to.eql(expectedVerificationSummaries)\r",
+									"})\r",
+									"\r",
+									"pm.test(\"Verify BusinessToAuthorizedRepLinkIndexes\",()=>{\r",
+									"   \r",
+									"   var BusinessToAuthorizedRepLinkIndexes = jsonData.data.CompanyResults.BusinessToAuthorizedRepLinkIndexes;\r",
+									"\r",
+									"    var expectedBusinessToAuthorizedRepLinkIndexes =  {\r",
+									"                \"BusinessToAuthorizedRepLinkIndex\": [\r",
+									"                    {\r",
+									"                        InputRepNumber: \"1\",\r",
+									"                        Index: \"0\",\r",
+									"                        Description: \"The input authorized rep cannot be linked to the business.\"\r",
+									"                    }\r",
+									"                ]\r",
+									"            }\r",
+									"   pm.expect(BusinessToAuthorizedRepLinkIndexes).to.eql(expectedBusinessToAuthorizedRepLinkIndexes)\r",
+									"}) \r",
+									"\r",
+									"pm.test(\"Verify Compliance\",()=>{\r",
+									"   \r",
+									"   var Compliance = jsonData.data.CompanyResults.Compliance;\r",
+									"\r",
+									"    var expectedCompliance = {\r",
+									"                \"Parent\": {\r",
+									"                    \"BusinessIds\": {\r",
+									"                        \"SeleID\": \"0\",\r",
+									"                        \"OrgID\": \"0\",\r",
+									"                        \"UltID\": \"0\"\r",
+									"                    }\r",
+									"                }\r",
+									"            }\r",
+									"   pm.expect(Compliance).to.eql(expectedCompliance)\r",
+									"})\r",
+									"\r",
+									"pm.test(\"Verify AddressRisk\",()=>{\r",
+									"   \r",
+									"   var AddressRisk = jsonData.data.CompanyResults.AddressRisk;\r",
+									"\r",
+									"    var expectedAddressRisk = {\r",
+									"                \"AddressIsCMRA\": \"false\"\r",
+									"            }\r",
+									"   pm.expect(AddressRisk).to.eql(expectedAddressRisk)\r",
+									"})\r",
+									"\r",
+									"var jsonschema = {\r",
+									"  \"$schema\": \"http://json-schema.org/draft-04/schema#\",\r",
+									"  \"type\": \"object\",\r",
+									"  \"properties\": {\r",
+									"    \"message\": {\r",
+									"      \"type\": \"string\"\r",
+									"    },\r",
+									"    \"data\": {\r",
+									"      \"type\": \"object\",\r",
+									"      \"properties\": {\r",
+									"        \"CompanyResults\": {\r",
+									"          \"type\": \"object\",\r",
+									"          \"properties\": {\r",
+									"            \"VerifiedInput\": {\r",
+									"              \"type\": \"object\",\r",
+									"              \"properties\": {\r",
+									"                \"CompanyName\": {\r",
+									"                  \"type\": \"string\"\r",
+									"                },\r",
+									"                \"Address\": {\r",
+									"                  \"type\": \"object\",\r",
+									"                  \"properties\": {\r",
+									"                    \"StreetAddress1\": {\r",
+									"                      \"type\": \"string\"\r",
+									"                    },\r",
+									"                    \"City\": {\r",
+									"                      \"type\": \"string\"\r",
+									"                    },\r",
+									"                    \"State\": {\r",
+									"                      \"type\": \"string\"\r",
+									"                    },\r",
+									"                    \"Zip5\": {\r",
+									"                      \"type\": \"string\"\r",
+									"                    }\r",
+									"                  },\r",
+									"                  \"required\": [\r",
+									"                    \"StreetAddress1\",\r",
+									"                    \"City\",\r",
+									"                    \"State\",\r",
+									"                    \"Zip5\"\r",
+									"                  ]\r",
+									"                }\r",
+									"              },\r",
+									"              \"required\": [\r",
+									"                \"CompanyName\",\r",
+									"                \"Address\"\r",
+									"              ]\r",
+									"            },\r",
+									"            \"VerificationIndicators\": {\r",
+									"              \"type\": \"object\",\r",
+									"              \"properties\": {\r",
+									"                \"CompanyName\": {\r",
+									"                  \"type\": \"string\"\r",
+									"                },\r",
+									"                \"StreetAddress\": {\r",
+									"                  \"type\": \"string\"\r",
+									"                },\r",
+									"                \"City\": {\r",
+									"                  \"type\": \"string\"\r",
+									"                },\r",
+									"                \"State\": {\r",
+									"                  \"type\": \"string\"\r",
+									"                },\r",
+									"                \"Zip\": {\r",
+									"                  \"type\": \"string\"\r",
+									"                },\r",
+									"                \"Phone\": {\r",
+									"                  \"type\": \"string\"\r",
+									"                },\r",
+									"                \"FEIN\": {\r",
+									"                  \"type\": \"string\"\r",
+									"                }\r",
+									"              },\r",
+									"              \"required\": [\r",
+									"                \"CompanyName\",\r",
+									"                \"StreetAddress\",\r",
+									"                \"City\",\r",
+									"                \"State\",\r",
+									"                \"Zip\",\r",
+									"                \"Phone\",\r",
+									"                \"FEIN\"\r",
+									"              ]\r",
+									"            },\r",
+									"            \"BestInformation\": {\r",
+									"              \"type\": \"object\",\r",
+									"              \"properties\": {\r",
+									"                \"CompanyName\": {\r",
+									"                  \"type\": \"string\"\r",
+									"                },\r",
+									"                \"Address\": {\r",
+									"                  \"type\": \"object\",\r",
+									"                  \"properties\": {\r",
+									"                    \"StreetNumber\": {\r",
+									"                      \"type\": \"string\"\r",
+									"                    },\r",
+									"                    \"StreetName\": {\r",
+									"                      \"type\": \"string\"\r",
+									"                    },\r",
+									"                    \"StreetSuffix\": {\r",
+									"                      \"type\": \"string\"\r",
+									"                    },\r",
+									"                    \"StreetAddress1\": {\r",
+									"                      \"type\": \"string\"\r",
+									"                    },\r",
+									"                    \"City\": {\r",
+									"                      \"type\": \"string\"\r",
+									"                    },\r",
+									"                    \"State\": {\r",
+									"                      \"type\": \"string\"\r",
+									"                    },\r",
+									"                    \"Zip5\": {\r",
+									"                      \"type\": \"string\"\r",
+									"                    },\r",
+									"                    \"Zip4\": {\r",
+									"                      \"type\": \"string\"\r",
+									"                    }\r",
+									"                  },\r",
+									"                  \"required\": [\r",
+									"                    \"StreetNumber\",\r",
+									"                    \"StreetName\",\r",
+									"                    \"StreetSuffix\",\r",
+									"                    \"StreetAddress1\",\r",
+									"                    \"City\",\r",
+									"                    \"State\",\r",
+									"                    \"Zip5\",\r",
+									"                    \"Zip4\"\r",
+									"                  ]\r",
+									"                },\r",
+									"                \"Phone\": {\r",
+									"                  \"type\": \"string\"\r",
+									"                },\r",
+									"                \"FEIN\": {\r",
+									"                  \"type\": \"string\"\r",
+									"                }\r",
+									"              },\r",
+									"              \"required\": [\r",
+									"                \"CompanyName\",\r",
+									"                \"Address\",\r",
+									"                \"Phone\",\r",
+									"                \"FEIN\"\r",
+									"              ]\r",
+									"            },\r",
+									"            \"BusinessIds\": {\r",
+									"              \"type\": \"object\",\r",
+									"              \"properties\": {\r",
+									"                \"DotID\": {\r",
+									"                  \"type\": \"string\"\r",
+									"                },\r",
+									"                \"EmpID\": {\r",
+									"                  \"type\": \"string\"\r",
+									"                },\r",
+									"                \"POWID\": {\r",
+									"                  \"type\": \"string\"\r",
+									"                },\r",
+									"                \"ProxID\": {\r",
+									"                  \"type\": \"string\"\r",
+									"                },\r",
+									"                \"SeleID\": {\r",
+									"                  \"type\": \"string\"\r",
+									"                },\r",
+									"                \"OrgID\": {\r",
+									"                  \"type\": \"string\"\r",
+									"                },\r",
+									"                \"UltID\": {\r",
+									"                  \"type\": \"string\"\r",
+									"                }\r",
+									"              },\r",
+									"              \"required\": [\r",
+									"                \"DotID\",\r",
+									"                \"EmpID\",\r",
+									"                \"POWID\",\r",
+									"                \"ProxID\",\r",
+									"                \"SeleID\",\r",
+									"                \"OrgID\",\r",
+									"                \"UltID\"\r",
+									"              ]\r",
+									"            },\r",
+									"            \"BusinessVerification\": {\r",
+									"              \"type\": \"object\",\r",
+									"              \"properties\": {\r",
+									"                \"Index\": {\r",
+									"                  \"type\": \"string\"\r",
+									"                },\r",
+									"                \"Description\": {\r",
+									"                  \"type\": \"string\"\r",
+									"                }\r",
+									"              },\r",
+									"              \"required\": [\r",
+									"                \"Index\",\r",
+									"                \"Description\"\r",
+									"              ]\r",
+									"            },\r",
+									"            \"RiskIndicators\": {\r",
+									"              \"type\": \"object\",\r",
+									"              \"properties\": {\r",
+									"                \"RiskIndicator\": {\r",
+									"                  \"type\": \"array\",\r",
+									"                  \"items\": [\r",
+									"                    {\r",
+									"                      \"type\": \"object\",\r",
+									"                      \"properties\": {\r",
+									"                        \"RiskCode\": {\r",
+									"                          \"type\": \"string\"\r",
+									"                        },\r",
+									"                        \"Description\": {\r",
+									"                          \"type\": \"string\"\r",
+									"                        },\r",
+									"                        \"Sequence\": {\r",
+									"                          \"type\": \"string\"\r",
+									"                        }\r",
+									"                      },\r",
+									"                      \"required\": [\r",
+									"                        \"RiskCode\",\r",
+									"                        \"Description\",\r",
+									"                        \"Sequence\"\r",
+									"                      ]\r",
+									"                    },\r",
+									"                    {\r",
+									"                      \"type\": \"object\",\r",
+									"                      \"properties\": {\r",
+									"                        \"RiskCode\": {\r",
+									"                          \"type\": \"string\"\r",
+									"                        },\r",
+									"                        \"Description\": {\r",
+									"                          \"type\": \"string\"\r",
+									"                        },\r",
+									"                        \"Sequence\": {\r",
+									"                          \"type\": \"string\"\r",
+									"                        }\r",
+									"                      },\r",
+									"                      \"required\": [\r",
+									"                        \"RiskCode\",\r",
+									"                        \"Description\",\r",
+									"                        \"Sequence\"\r",
+									"                      ]\r",
+									"                    },\r",
+									"                    {\r",
+									"                      \"type\": \"object\",\r",
+									"                      \"properties\": {\r",
+									"                        \"RiskCode\": {\r",
+									"                          \"type\": \"string\"\r",
+									"                        },\r",
+									"                        \"Description\": {\r",
+									"                          \"type\": \"string\"\r",
+									"                        },\r",
+									"                        \"Sequence\": {\r",
+									"                          \"type\": \"string\"\r",
+									"                        }\r",
+									"                      },\r",
+									"                      \"required\": [\r",
+									"                        \"RiskCode\",\r",
+									"                        \"Description\",\r",
+									"                        \"Sequence\"\r",
+									"                      ]\r",
+									"                    },\r",
+									"                    {\r",
+									"                      \"type\": \"object\",\r",
+									"                      \"properties\": {\r",
+									"                        \"RiskCode\": {\r",
+									"                          \"type\": \"string\"\r",
+									"                        },\r",
+									"                        \"Description\": {\r",
+									"                          \"type\": \"string\"\r",
+									"                        },\r",
+									"                        \"Sequence\": {\r",
+									"                          \"type\": \"string\"\r",
+									"                        }\r",
+									"                      },\r",
+									"                      \"required\": [\r",
+									"                        \"RiskCode\",\r",
+									"                        \"Description\",\r",
+									"                        \"Sequence\"\r",
+									"                      ]\r",
+									"                    },\r",
+									"                    {\r",
+									"                      \"type\": \"object\",\r",
+									"                      \"properties\": {\r",
+									"                        \"RiskCode\": {\r",
+									"                          \"type\": \"string\"\r",
+									"                        },\r",
+									"                        \"Description\": {\r",
+									"                          \"type\": \"string\"\r",
+									"                        },\r",
+									"                        \"Sequence\": {\r",
+									"                          \"type\": \"string\"\r",
+									"                        }\r",
+									"                      },\r",
+									"                      \"required\": [\r",
+									"                        \"RiskCode\",\r",
+									"                        \"Description\",\r",
+									"                        \"Sequence\"\r",
+									"                      ]\r",
+									"                    },\r",
+									"                    {\r",
+									"                      \"type\": \"object\",\r",
+									"                      \"properties\": {\r",
+									"                        \"RiskCode\": {\r",
+									"                          \"type\": \"string\"\r",
+									"                        },\r",
+									"                        \"Description\": {\r",
+									"                          \"type\": \"string\"\r",
+									"                        },\r",
+									"                        \"Sequence\": {\r",
+									"                          \"type\": \"string\"\r",
+									"                        }\r",
+									"                      },\r",
+									"                      \"required\": [\r",
+									"                        \"RiskCode\",\r",
+									"                        \"Description\",\r",
+									"                        \"Sequence\"\r",
+									"                      ]\r",
+									"                    }\r",
+									"                  ]\r",
+									"                }\r",
+									"              },\r",
+									"              \"required\": [\r",
+									"                \"RiskIndicator\"\r",
+									"              ]\r",
+									"            },\r",
+									"            \"ResidentialBusinesses\": {\r",
+									"              \"type\": \"object\",\r",
+									"              \"properties\": {\r",
+									"                \"ResidentialBusiness\": {\r",
+									"                  \"type\": \"array\",\r",
+									"                  \"items\": [\r",
+									"                    {\r",
+									"                      \"type\": \"object\",\r",
+									"                      \"properties\": {\r",
+									"                        \"Indicator\": {\r",
+									"                          \"type\": \"string\"\r",
+									"                        },\r",
+									"                        \"Description\": {\r",
+									"                          \"type\": \"string\"\r",
+									"                        }\r",
+									"                      },\r",
+									"                      \"required\": [\r",
+									"                        \"Indicator\",\r",
+									"                        \"Description\"\r",
+									"                      ]\r",
+									"                    }\r",
+									"                  ]\r",
+									"                }\r",
+									"              },\r",
+									"              \"required\": [\r",
+									"                \"ResidentialBusiness\"\r",
+									"              ]\r",
+									"            },\r",
+									"            \"VerificationSummaries\": {\r",
+									"              \"type\": \"object\",\r",
+									"              \"properties\": {\r",
+									"                \"VerificationSummary\": {\r",
+									"                  \"type\": \"array\",\r",
+									"                  \"items\": [\r",
+									"                    {\r",
+									"                      \"type\": \"object\",\r",
+									"                      \"properties\": {\r",
+									"                        \"Type\": {\r",
+									"                          \"type\": \"string\"\r",
+									"                        },\r",
+									"                        \"Index\": {\r",
+									"                          \"type\": \"string\"\r",
+									"                        },\r",
+									"                        \"Description\": {\r",
+									"                          \"type\": \"string\"\r",
+									"                        }\r",
+									"                      },\r",
+									"                      \"required\": [\r",
+									"                        \"Type\",\r",
+									"                        \"Index\",\r",
+									"                        \"Description\"\r",
+									"                      ]\r",
+									"                    },\r",
+									"                    {\r",
+									"                      \"type\": \"object\",\r",
+									"                      \"properties\": {\r",
+									"                        \"Type\": {\r",
+									"                          \"type\": \"string\"\r",
+									"                        },\r",
+									"                        \"Index\": {\r",
+									"                          \"type\": \"string\"\r",
+									"                        },\r",
+									"                        \"Description\": {\r",
+									"                          \"type\": \"string\"\r",
+									"                        }\r",
+									"                      },\r",
+									"                      \"required\": [\r",
+									"                        \"Type\",\r",
+									"                        \"Index\",\r",
+									"                        \"Description\"\r",
+									"                      ]\r",
+									"                    },\r",
+									"                    {\r",
+									"                      \"type\": \"object\",\r",
+									"                      \"properties\": {\r",
+									"                        \"Type\": {\r",
+									"                          \"type\": \"string\"\r",
+									"                        },\r",
+									"                        \"Index\": {\r",
+									"                          \"type\": \"string\"\r",
+									"                        },\r",
+									"                        \"Description\": {\r",
+									"                          \"type\": \"string\"\r",
+									"                        }\r",
+									"                      },\r",
+									"                      \"required\": [\r",
+									"                        \"Type\",\r",
+									"                        \"Index\",\r",
+									"                        \"Description\"\r",
+									"                      ]\r",
+									"                    },\r",
+									"                    {\r",
+									"                      \"type\": \"object\",\r",
+									"                      \"properties\": {\r",
+									"                        \"Type\": {\r",
+									"                          \"type\": \"string\"\r",
+									"                        },\r",
+									"                        \"Index\": {\r",
+									"                          \"type\": \"string\"\r",
+									"                        },\r",
+									"                        \"Description\": {\r",
+									"                          \"type\": \"string\"\r",
+									"                        }\r",
+									"                      },\r",
+									"                      \"required\": [\r",
+									"                        \"Type\",\r",
+									"                        \"Index\",\r",
+									"                        \"Description\"\r",
+									"                      ]\r",
+									"                    },\r",
+									"                    {\r",
+									"                      \"type\": \"object\",\r",
+									"                      \"properties\": {\r",
+									"                        \"Type\": {\r",
+									"                          \"type\": \"string\"\r",
+									"                        },\r",
+									"                        \"Index\": {\r",
+									"                          \"type\": \"string\"\r",
+									"                        },\r",
+									"                        \"Description\": {\r",
+									"                          \"type\": \"string\"\r",
+									"                        }\r",
+									"                      },\r",
+									"                      \"required\": [\r",
+									"                        \"Type\",\r",
+									"                        \"Index\",\r",
+									"                        \"Description\"\r",
+									"                      ]\r",
+									"                    }\r",
+									"                  ]\r",
+									"                }\r",
+									"              },\r",
+									"              \"required\": [\r",
+									"                \"VerificationSummary\"\r",
+									"              ]\r",
+									"            },\r",
+									"            \"BusinessToAuthorizedRepLinkIndexes\": {\r",
+									"              \"type\": \"object\",\r",
+									"              \"properties\": {\r",
+									"                \"BusinessToAuthorizedRepLinkIndex\": {\r",
+									"                  \"type\": \"array\",\r",
+									"                  \"items\": [\r",
+									"                    {\r",
+									"                      \"type\": \"object\",\r",
+									"                      \"properties\": {\r",
+									"                        \"InputRepNumber\": {\r",
+									"                          \"type\": \"string\"\r",
+									"                        },\r",
+									"                        \"Index\": {\r",
+									"                          \"type\": \"string\"\r",
+									"                        },\r",
+									"                        \"Description\": {\r",
+									"                          \"type\": \"string\"\r",
+									"                        }\r",
+									"                      },\r",
+									"                      \"required\": [\r",
+									"                        \"InputRepNumber\",\r",
+									"                        \"Index\",\r",
+									"                        \"Description\"\r",
+									"                      ]\r",
+									"                    }\r",
+									"                  ]\r",
+									"                }\r",
+									"              },\r",
+									"              \"required\": [\r",
+									"                \"BusinessToAuthorizedRepLinkIndex\"\r",
+									"              ]\r",
+									"            },\r",
+									"            \"Compliance\": {\r",
+									"              \"type\": \"object\",\r",
+									"              \"properties\": {\r",
+									"                \"Parent\": {\r",
+									"                  \"type\": \"object\",\r",
+									"                  \"properties\": {\r",
+									"                    \"BusinessIds\": {\r",
+									"                      \"type\": \"object\",\r",
+									"                      \"properties\": {\r",
+									"                        \"SeleID\": {\r",
+									"                          \"type\": \"string\"\r",
+									"                        },\r",
+									"                        \"OrgID\": {\r",
+									"                          \"type\": \"string\"\r",
+									"                        },\r",
+									"                        \"UltID\": {\r",
+									"                          \"type\": \"string\"\r",
+									"                        }\r",
+									"                      },\r",
+									"                      \"required\": [\r",
+									"                        \"SeleID\",\r",
+									"                        \"OrgID\",\r",
+									"                        \"UltID\"\r",
+									"                      ]\r",
+									"                    }\r",
+									"                  },\r",
+									"                  \"required\": [\r",
+									"                    \"BusinessIds\"\r",
+									"                  ]\r",
+									"                }\r",
+									"              },\r",
+									"              \"required\": [\r",
+									"                \"Parent\"\r",
+									"              ]\r",
+									"            },\r",
+									"            \"AddressRisk\": {\r",
+									"              \"type\": \"object\",\r",
+									"              \"properties\": {\r",
+									"                \"AddressIsCMRA\": {\r",
+									"                  \"type\": \"string\"\r",
+									"                }\r",
+									"              },\r",
+									"              \"required\": [\r",
+									"                \"AddressIsCMRA\"\r",
+									"              ]\r",
+									"            },\r",
+									"            \"originalCompanyResult\": {\r",
+									"              \"type\": \"object\",\r",
+									"              \"properties\": {\r",
+									"                \"verificationIndicators\": {\r",
+									"                  \"type\": \"object\",\r",
+									"                  \"properties\": {\r",
+									"                    \"CompanyName\": {\r",
+									"                      \"type\": \"string\"\r",
+									"                    },\r",
+									"                    \"StreetAddress\": {\r",
+									"                      \"type\": \"string\"\r",
+									"                    },\r",
+									"                    \"City\": {\r",
+									"                      \"type\": \"string\"\r",
+									"                    },\r",
+									"                    \"State\": {\r",
+									"                      \"type\": \"string\"\r",
+									"                    },\r",
+									"                    \"Zip\": {\r",
+									"                      \"type\": \"string\"\r",
+									"                    },\r",
+									"                    \"Phone\": {\r",
+									"                      \"type\": \"string\"\r",
+									"                    },\r",
+									"                    \"FEIN\": {\r",
+									"                      \"type\": \"string\"\r",
+									"                    }\r",
+									"                  },\r",
+									"                  \"required\": [\r",
+									"                    \"CompanyName\",\r",
+									"                    \"StreetAddress\",\r",
+									"                    \"City\",\r",
+									"                    \"State\",\r",
+									"                    \"Zip\",\r",
+									"                    \"Phone\",\r",
+									"                    \"FEIN\"\r",
+									"                  ]\r",
+									"                },\r",
+									"                \"businessVerification\": {\r",
+									"                  \"type\": \"object\",\r",
+									"                  \"properties\": {\r",
+									"                    \"Index\": {\r",
+									"                      \"type\": \"string\"\r",
+									"                    },\r",
+									"                    \"Description\": {\r",
+									"                      \"type\": \"string\"\r",
+									"                    }\r",
+									"                  },\r",
+									"                  \"required\": [\r",
+									"                    \"Index\",\r",
+									"                    \"Description\"\r",
+									"                  ]\r",
+									"                }\r",
+									"              },\r",
+									"              \"required\": [\r",
+									"                \"verificationIndicators\",\r",
+									"                \"businessVerification\"\r",
+									"              ]\r",
+									"            }\r",
+									"          },\r",
+									"          \"required\": [\r",
+									"            \"VerifiedInput\",\r",
+									"            \"VerificationIndicators\",\r",
+									"            \"BestInformation\",\r",
+									"            \"BusinessIds\",\r",
+									"            \"BusinessVerification\",\r",
+									"            \"RiskIndicators\",\r",
+									"            \"ResidentialBusinesses\",\r",
+									"            \"VerificationSummaries\",\r",
+									"            \"BusinessToAuthorizedRepLinkIndexes\",\r",
+									"            \"Compliance\",\r",
+									"            \"AddressRisk\",\r",
+									"            \"originalCompanyResult\"\r",
+									"          ]\r",
+									"        },\r",
+									"        \"request_result\": {\r",
+									"          \"type\": \"string\"\r",
+									"        },\r",
+									"        \"AuthorizedRepresentativeResults\": {\r",
+									"          \"type\": \"object\",\r",
+									"          \"properties\": {\r",
+									"            \"Sequence\": {\r",
+									"              \"type\": \"string\"\r",
+									"            },\r",
+									"            \"Name\": {\r",
+									"              \"type\": \"object\",\r",
+									"              \"properties\": {\r",
+									"                \"First\": {\r",
+									"                  \"type\": \"string\"\r",
+									"                },\r",
+									"                \"Last\": {\r",
+									"                  \"type\": \"string\"\r",
+									"                }\r",
+									"              },\r",
+									"              \"required\": [\r",
+									"                \"First\",\r",
+									"                \"Last\"\r",
+									"              ]\r",
+									"            },\r",
+									"            \"Address\": {\r",
+									"              \"type\": \"object\",\r",
+									"              \"properties\": {\r",
+									"                \"StreetNumber\": {\r",
+									"                  \"type\": \"string\"\r",
+									"                },\r",
+									"                \"StreetName\": {\r",
+									"                  \"type\": \"string\"\r",
+									"                },\r",
+									"                \"StreetSuffix\": {\r",
+									"                  \"type\": \"string\"\r",
+									"                },\r",
+									"                \"StreetAddress1\": {\r",
+									"                  \"type\": \"string\"\r",
+									"                },\r",
+									"                \"City\": {\r",
+									"                  \"type\": \"string\"\r",
+									"                },\r",
+									"                \"State\": {\r",
+									"                  \"type\": \"string\"\r",
+									"                },\r",
+									"                \"Zip5\": {\r",
+									"                  \"type\": \"string\"\r",
+									"                }\r",
+									"              },\r",
+									"              \"required\": [\r",
+									"                \"StreetNumber\",\r",
+									"                \"StreetName\",\r",
+									"                \"StreetSuffix\",\r",
+									"                \"StreetAddress1\",\r",
+									"                \"City\",\r",
+									"                \"State\",\r",
+									"                \"Zip5\"\r",
+									"              ]\r",
+									"            },\r",
+									"            \"AddressType\": {\r",
+									"              \"type\": \"string\"\r",
+									"            },\r",
+									"            \"RiskIndicator\": {\r",
+									"              \"type\": \"array\",\r",
+									"              \"items\": [\r",
+									"                {\r",
+									"                  \"type\": \"object\",\r",
+									"                  \"properties\": {\r",
+									"                    \"RiskCode\": {\r",
+									"                      \"type\": \"string\"\r",
+									"                    },\r",
+									"                    \"Description\": {\r",
+									"                      \"type\": \"string\"\r",
+									"                    },\r",
+									"                    \"Sequence\": {\r",
+									"                      \"type\": \"string\"\r",
+									"                    }\r",
+									"                  },\r",
+									"                  \"required\": [\r",
+									"                    \"RiskCode\",\r",
+									"                    \"Description\",\r",
+									"                    \"Sequence\"\r",
+									"                  ]\r",
+									"                },\r",
+									"                {\r",
+									"                  \"type\": \"object\",\r",
+									"                  \"properties\": {\r",
+									"                    \"RiskCode\": {\r",
+									"                      \"type\": \"string\"\r",
+									"                    },\r",
+									"                    \"Description\": {\r",
+									"                      \"type\": \"string\"\r",
+									"                    },\r",
+									"                    \"Sequence\": {\r",
+									"                      \"type\": \"string\"\r",
+									"                    }\r",
+									"                  },\r",
+									"                  \"required\": [\r",
+									"                    \"RiskCode\",\r",
+									"                    \"Description\",\r",
+									"                    \"Sequence\"\r",
+									"                  ]\r",
+									"                },\r",
+									"                {\r",
+									"                  \"type\": \"object\",\r",
+									"                  \"properties\": {\r",
+									"                    \"RiskCode\": {\r",
+									"                      \"type\": \"string\"\r",
+									"                    },\r",
+									"                    \"Description\": {\r",
+									"                      \"type\": \"string\"\r",
+									"                    },\r",
+									"                    \"Sequence\": {\r",
+									"                      \"type\": \"string\"\r",
+									"                    }\r",
+									"                  },\r",
+									"                  \"required\": [\r",
+									"                    \"RiskCode\",\r",
+									"                    \"Description\",\r",
+									"                    \"Sequence\"\r",
+									"                  ]\r",
+									"                },\r",
+									"                {\r",
+									"                  \"type\": \"object\",\r",
+									"                  \"properties\": {\r",
+									"                    \"RiskCode\": {\r",
+									"                      \"type\": \"string\"\r",
+									"                    },\r",
+									"                    \"Description\": {\r",
+									"                      \"type\": \"string\"\r",
+									"                    },\r",
+									"                    \"Sequence\": {\r",
+									"                      \"type\": \"string\"\r",
+									"                    }\r",
+									"                  },\r",
+									"                  \"required\": [\r",
+									"                    \"RiskCode\",\r",
+									"                    \"Description\",\r",
+									"                    \"Sequence\"\r",
+									"                  ]\r",
+									"                }\r",
+									"              ]\r",
+									"            },\r",
+									"            \"InputEcho\": {\r",
+									"              \"type\": \"object\",\r",
+									"              \"properties\": {\r",
+									"                \"Sequence\": {\r",
+									"                  \"type\": \"string\"\r",
+									"                },\r",
+									"                \"Name\": {\r",
+									"                  \"type\": \"object\",\r",
+									"                  \"properties\": {\r",
+									"                    \"First\": {\r",
+									"                      \"type\": \"string\"\r",
+									"                    },\r",
+									"                    \"Last\": {\r",
+									"                      \"type\": \"string\"\r",
+									"                    }\r",
+									"                  },\r",
+									"                  \"required\": [\r",
+									"                    \"First\",\r",
+									"                    \"Last\"\r",
+									"                  ]\r",
+									"                },\r",
+									"                \"Address\": {\r",
+									"                  \"type\": \"object\",\r",
+									"                  \"properties\": {\r",
+									"                    \"StreetNumber\": {\r",
+									"                      \"type\": \"string\"\r",
+									"                    },\r",
+									"                    \"StreetName\": {\r",
+									"                      \"type\": \"string\"\r",
+									"                    },\r",
+									"                    \"StreetSuffix\": {\r",
+									"                      \"type\": \"string\"\r",
+									"                    },\r",
+									"                    \"StreetAddress1\": {\r",
+									"                      \"type\": \"string\"\r",
+									"                    },\r",
+									"                    \"City\": {\r",
+									"                      \"type\": \"string\"\r",
+									"                    },\r",
+									"                    \"State\": {\r",
+									"                      \"type\": \"string\"\r",
+									"                    },\r",
+									"                    \"Zip5\": {\r",
+									"                      \"type\": \"string\"\r",
+									"                    }\r",
+									"                  },\r",
+									"                  \"required\": [\r",
+									"                    \"StreetNumber\",\r",
+									"                    \"StreetName\",\r",
+									"                    \"StreetSuffix\",\r",
+									"                    \"StreetAddress1\",\r",
+									"                    \"City\",\r",
+									"                    \"State\",\r",
+									"                    \"Zip5\"\r",
+									"                  ]\r",
+									"                },\r",
+									"                \"AddressType\": {\r",
+									"                  \"type\": \"string\"\r",
+									"                }\r",
+									"              },\r",
+									"              \"required\": [\r",
+									"                \"Sequence\",\r",
+									"                \"Name\",\r",
+									"                \"Address\",\r",
+									"                \"AddressType\"\r",
+									"              ]\r",
+									"            },\r",
+									"            \"ComprehensiveVerificationIndex\": {\r",
+									"              \"type\": \"string\"\r",
+									"            }\r",
+									"          },\r",
+									"          \"required\": [\r",
+									"            \"Sequence\",\r",
+									"            \"Name\",\r",
+									"            \"Address\",\r",
+									"            \"AddressType\",\r",
+									"            \"RiskIndicator\",\r",
+									"            \"InputEcho\",\r",
+									"            \"ComprehensiveVerificationIndex\"\r",
+									"          ]\r",
+									"        },\r",
+									"        \"review_status\": {\r",
+									"          \"type\": \"string\"\r",
+									"        },\r",
+									"        \"status\": {\r",
+									"          \"type\": \"string\"\r",
+									"        },\r",
+									"        \"InputEcho\": {\r",
+									"          \"type\": \"object\",\r",
+									"          \"properties\": {\r",
+									"            \"Company\": {\r",
+									"              \"type\": \"object\",\r",
+									"              \"properties\": {\r",
+									"                \"CompanyName\": {\r",
+									"                  \"type\": \"string\"\r",
+									"                },\r",
+									"                \"Address\": {\r",
+									"                  \"type\": \"object\",\r",
+									"                  \"properties\": {\r",
+									"                    \"StreetAddress1\": {\r",
+									"                      \"type\": \"string\"\r",
+									"                    },\r",
+									"                    \"City\": {\r",
+									"                      \"type\": \"string\"\r",
+									"                    },\r",
+									"                    \"State\": {\r",
+									"                      \"type\": \"string\"\r",
+									"                    },\r",
+									"                    \"Zip5\": {\r",
+									"                      \"type\": \"string\"\r",
+									"                    }\r",
+									"                  },\r",
+									"                  \"required\": [\r",
+									"                    \"StreetAddress1\",\r",
+									"                    \"City\",\r",
+									"                    \"State\",\r",
+									"                    \"Zip5\"\r",
+									"                  ]\r",
+									"                },\r",
+									"                \"Phone\": {\r",
+									"                  \"type\": \"string\"\r",
+									"                },\r",
+									"                \"FEIN\": {\r",
+									"                  \"type\": \"string\"\r",
+									"                }\r",
+									"              },\r",
+									"              \"required\": [\r",
+									"                \"CompanyName\",\r",
+									"                \"Address\",\r",
+									"                \"Phone\",\r",
+									"                \"FEIN\"\r",
+									"              ]\r",
+									"            },\r",
+									"            \"AuthorizedRepresentatives\": {\r",
+									"              \"type\": \"object\",\r",
+									"              \"properties\": {\r",
+									"                \"AuthorizedRepresentative\": {\r",
+									"                  \"type\": \"array\",\r",
+									"                  \"items\": [\r",
+									"                    {\r",
+									"                      \"type\": \"object\",\r",
+									"                      \"properties\": {\r",
+									"                        \"Sequence\": {\r",
+									"                          \"type\": \"string\"\r",
+									"                        },\r",
+									"                        \"Name\": {\r",
+									"                          \"type\": \"object\",\r",
+									"                          \"properties\": {\r",
+									"                            \"First\": {\r",
+									"                              \"type\": \"string\"\r",
+									"                            },\r",
+									"                            \"Last\": {\r",
+									"                              \"type\": \"string\"\r",
+									"                            }\r",
+									"                          },\r",
+									"                          \"required\": [\r",
+									"                            \"First\",\r",
+									"                            \"Last\"\r",
+									"                          ]\r",
+									"                        },\r",
+									"                        \"UniqueId\": {\r",
+									"                          \"type\": \"string\"\r",
+									"                        }\r",
+									"                      },\r",
+									"                      \"required\": [\r",
+									"                        \"Sequence\",\r",
+									"                        \"Name\",\r",
+									"                        \"UniqueId\"\r",
+									"                      ]\r",
+									"                    }\r",
+									"                  ]\r",
+									"                }\r",
+									"              },\r",
+									"              \"required\": [\r",
+									"                \"AuthorizedRepresentative\"\r",
+									"              ]\r",
+									"            }\r",
+									"          },\r",
+									"          \"required\": [\r",
+									"            \"Company\",\r",
+									"            \"AuthorizedRepresentatives\"\r",
+									"          ]\r",
+									"        }\r",
+									"      },\r",
+									"      \"required\": [\r",
+									"        \"CompanyResults\",\r",
+									"        \"request_result\",\r",
+									"        \"AuthorizedRepresentativeResults\",\r",
+									"        \"review_status\",\r",
+									"        \"status\",\r",
+									"        \"InputEcho\"\r",
+									"      ]\r",
+									"    }\r",
+									"  },\r",
+									"  \"required\": [\r",
+									"    \"message\",\r",
+									"    \"data\"\r",
+									"  ]\r",
+									"}\r",
+									"\r",
+									"pm.test('Schema is valid', function () {\r",
+									"  pm. expect (tv4. validate (jsonData,jsonschema)).to.be.true;\r",
+									"});\r",
+									"\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"provider\": \"LEXIS_NEXIS\",\r\n    \"name\": \"Satschel\",\r\n    \"website\": \"https://satschel.com/\",\r\n    \"fein\": \"866741152\",\r\n    \"linkedInUrl\": \"https://www.linkedin.com/company/Satschel\",\r\n    \"address\": {\r\n        \"street_address1\": \"30,Augusta Canyon road\",\r\n        \"street_address2\": null,\r\n        \"city\": \"Las Vegas\",\r\n        \"state\": \"NV\",\r\n        \"postal_code\": \"80341\",\r\n        \"type\": null,\r\n        \"phone\": \"415516188\"\r\n    },\r\n    \"person\": {\r\n        \"firstName\": \"Austin\",\r\n        \"lastName\": \"Fury\"\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.satschel.com/v2/aml/kyb?type=standard",
+							"protocol": "https",
+							"host": [
+								"api",
+								"satschel",
+								"com"
+							],
+							"path": [
+								"v2",
+								"aml",
+								"kyb"
+							],
+							"query": [
+								{
+									"key": "type",
+									"value": "standard"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2.2  -KYB Basic.2-KYB report API",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"callbackUrl\": \"https://yashpatel.com\",\r\n    \"companyName\": \"yashinfosoft\",\r\n    \"website\": \"https://yashinfosoft.com\",\r\n    \"companyAddress\": {\r\n        \"streetAddress1\": \"javanpur,talod\",\r\n        \"streetAddress2\": \"talod,383215\",\r\n        \"city\": \"talod\",\r\n        \"state\": \"gujarat\",\r\n        \"zip\": \"383215\"\r\n    },\r\n    \"phone\": \"457484857\",\r\n    \"ein\": \"47583765768\",\r\n    \"accountRepresentative\": {\r\n        \"firstName\": \"yash\",\r\n        \"lastName\": \"patel\",\r\n        \"address\": {\r\n            \"streetAddress1\": \"javanpur\",\r\n            \"streetAddress2\": \"talod,sabarkantha\",\r\n            \"city\": \"talod\",\r\n            \"state\": \"gujarat\",\r\n            \"zip\": \"383215\"\r\n        },\r\n        \"dateOfBirth\": \"12 dec 2002\",\r\n        \"ssnNumber\": \"4789567857\",\r\n        \"phone\": \"856845958\"\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.satschel.com/v2/kyb/entity",
+							"protocol": "https",
+							"host": [
+								"api",
+								"satschel",
+								"com"
+							],
+							"path": [
+								"v2",
+								"kyb",
+								"entity"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "3.KYB - Basic + Supplemental",
+			"item": [
+				{
+					"name": "1.Documentation: KYB (Know Your Business)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData= pm.response.json();\r",
+									"// 1=> Validate VerifyInput\r",
+									"pm.test(\"Validate VerifyInput\",()=>{\r",
+									"\r",
+									"    //Extract VerifyInput\r",
+									"  var verifyInput=jsonData.data.CompanyResults.VerifiedInput;\r",
+									" // Define Expected VerifyInput\r",
+									"   var expectedVerifiedInput={\r",
+									"      \"CompanyName\": \"SATSCHEL\"\r",
+									"   }\r",
+									"//  Validate verifyInput to  ExpectedVerifiedInput\r",
+									"   pm.expect( verifyInput).to.eql(expectedVerifiedInput);\r",
+									"})\r",
+									"\r",
+									"// 2=> Validate Verification Indicators \r",
+									"pm.test(\"Verify Verification Indicators\",()=>{\r",
+									"   \r",
+									"   // Extract Verification Indicator\r",
+									"   var verificationIndicators = jsonData.data.CompanyResults.VerificationIndicators;\r",
+									"    \r",
+									"   //Define Expected  Verification Indicators\r",
+									"   var expectedIndicators = {\r",
+									"        CompanyName: \"1\", \r",
+									"        StreetAddress: \"0\",\r",
+									"        City: \"0\",\r",
+									"        State: \"0\",\r",
+									"        Zip: \"0\",\r",
+									"        Phone: \"0\",\r",
+									"        FEIN: \"0\"\r",
+									"   }\r",
+									" // Verify VeroficationIndicator To ExpectedVerificationIndicator\r",
+									"   pm.expect(verificationIndicators).to.eql(expectedIndicators)\r",
+									"})\r",
+									"\r",
+									"// 3=> Validate Best Information \r",
+									"pm.test(\"Verify Best Information\",()=>{\r",
+									"    \r",
+									"    //Extract BestInformation\r",
+									"    var bestInformation= jsonData.data.CompanyResults.BestInformation;\r",
+									"    //Define Expected Best Information\r",
+									"    var expectedbestInformation= { \r",
+									"        CompanyName: \"SATSCHEL LLC\",\r",
+									"        Address: {\r",
+									"            StreetNumber: \"30\",\r",
+									"            StreetName: \"AUGUSTA CANYON\",\r",
+									"            StreetSuffix: \"WAY\",\r",
+									"            StreetAddress1: \"30 AUGUSTA CANYON WAY\",\r",
+									"            City: \"LAS VEGAS\",\r",
+									"            State: \"NV\",\r",
+									"            Zip5: \"89141\",\r",
+									"            Zip4: \"6066\"\r",
+									"        },\r",
+									"        Phone: \"4157416782\",\r",
+									"        FEIN: \"863141152\"\r",
+									"    }\r",
+									"\t\t//Verify bestInformation to Ecxpected BestInformation\r",
+									"    pm.expect(bestInformation).to.eql(expectedbestInformation)\r",
+									"})\r",
+									"\r",
+									"// 4=> Validate BusinessIds\r",
+									"pm.test(\"Verify BusinessIds\",()=>{\r",
+									"\r",
+									"    //Extract BusinessIds\r",
+									"    var businessIds= jsonData.data.CompanyResults.BusinessIds;\r",
+									"    //Define Expected BusinessIds\r",
+									"    var expectedBusinessIds= {\r",
+									"                \"DotID\": \"0\",\r",
+									"                \"EmpID\": \"0\",\r",
+									"                \"POWID\": \"137588403657\",\r",
+									"                \"ProxID\": \"137588403657\",\r",
+									"                \"SeleID\": \"137588403657\",\r",
+									"                \"OrgID\": \"137588403657\",\r",
+									"                \"UltID\": \"137588403657\"\r",
+									"    }\r",
+									"\r",
+									"// Verify BusinesIds To ExpectedBusinessIds\r",
+									"    pm.expect(businessIds).to.eql(expectedBusinessIds);\r",
+									"});\r",
+									"\r",
+									"// 5=>  BusinessVerification:\r",
+									"pm.test(\"Verify Business Verification\",()=>{\r",
+									"    \r",
+									"    //Extract Business Verification\r",
+									"    var businessVerification= jsonData.data.CompanyResults.BusinessVerification;\r",
+									"    //Define expected businessVerification\r",
+									"    var business={\r",
+									"                \"Index\": \"12\",\r",
+									"                \"Description\": \"Input business name verified on a business record.\"};\r",
+									"\r",
+									"    pm.expect(businessVerification).to.eql(business);\r",
+									"\r",
+									"})\r",
+									"\r",
+									"// 6=> Verify RiskIndicators\r",
+									"pm.test(\"Verify RiskIndiactors\",()=>{\r",
+									"\r",
+									"    //Extract RiskIndicators\r",
+									"    var riskIndicator= jsonData.data.CompanyResults.RiskIndicators.RiskIndicator;\r",
+									"    //Define Expected RiskIndicators\r",
+									"\r",
+									"    var expectedRiskIndicators=[\r",
+									"        {\r",
+									"            RiskCode: \"15\",\r",
+									"            Description: \"Business is not registered at Secretary of State of input business state\",\r",
+									"            Sequence: \"1\"\r",
+									"        },\r",
+									"        {\r",
+									"            RiskCode: \"20\",\r",
+									"            Description: \"Unable to verify business address on business records\",\r",
+									"            Sequence: \"2\"\r",
+									"        },\r",
+									"        {\r",
+									"            RiskCode: \"21\",\r",
+									"            Description: \"Unable to verify business TIN on business records\",\r",
+									"            Sequence: \"3\"\r",
+									"        },\r",
+									"        {\r",
+									"            RiskCode: \"22\",\r",
+									"            Description: \"Unable to verify business phone number on business records\",\r",
+									"            Sequence: \"4\"\r",
+									"        },\r",
+									"        {\r",
+									"            RiskCode: \"31\",\r",
+									"            Description: \"The input business phone number is a mobile number\",\r",
+									"            Sequence: \"5\"\r",
+									"        },\r",
+									"        {\r",
+									"            RiskCode: \"37\",\r",
+									"            Description: \"The input business TIN is not found\",\r",
+									"            Sequence: \"6\"\r",
+									"        },\r",
+									"        {\r",
+									"            RiskCode: \"43\",\r",
+									"            Description: \"The input business address may be invalid according to postal specifications\",\r",
+									"            Sequence: \"7\"\r",
+									"        },\r",
+									"        {\r",
+									"            RiskCode: \"44\",\r",
+									"            Description: \"The input business phone number is potentially invalid\",\r",
+									"            Sequence: \"8\"\r",
+									"        }\r",
+									"    ];\r",
+									"\r",
+									"   //Verify riskIndicator to Expected RiskIndicators\r",
+									"   pm.expect(riskIndicator).to.eql(expectedRiskIndicators);\r",
+									"});\r",
+									"\r",
+									"// 7=>Validate Residential Business\r",
+									"pm.test(\"Verify Residential Business\",()=>{\r",
+									"\r",
+									"  //Extract Residential Business \r",
+									"  var resdentialBusiness= jsonData.data.CompanyResults.ResidentialBusinesses.ResidentialBusiness;\r",
+									" // Define Expected Residential Business\r",
+									"   var expectedResidentialBusines=[\r",
+									"     {\r",
+									"       \"Indicator\":\"0\",\r",
+									"       \"Description\":\"Commercial Address\"\r",
+									"     }\r",
+									"   ];\r",
+									"\r",
+									"   pm.expect(resdentialBusiness).to.eql(expectedResidentialBusines);\r",
+									"});\r",
+									"\r",
+									"// 8=> Validate Verification Summaries\r",
+									"pm.test(\"Verify Verification Summaries\", ()=>{\r",
+									"\r",
+									"// Extract verification Summaries\r",
+									"var verificationSummaries= jsonData.data.CompanyResults.VerificationSummaries.VerificationSummary\r",
+									"\r",
+									"// Define Expected verification Summaries\r",
+									"var expectVerificationSummaries=[\r",
+									"       {\r",
+									"                        \"Type\": \"PHONESOURCE\",\r",
+									"                        \"Index\": \"0\",\r",
+									"                        \"Description\": \"No business inputs verified on this source\"\r",
+									"                    },\r",
+									"                    {\r",
+									"                        \"Type\": \"BUREAU\",\r",
+									"                        \"Index\": \"0\",\r",
+									"                        \"Description\": \"No business inputs verified on this source\"\r",
+									"                    },\r",
+									"                    {\r",
+									"                        \"Type\": \"GOVTREGISTRATIONS\",\r",
+									"                        \"Index\": \"1\",\r",
+									"                        \"Description\": \"Input Business Name verified\"\r",
+									"                    },\r",
+									"                    {\r",
+									"                        \"Type\": \"PUBLICRECORDFILINGS\",\r",
+									"                        \"Index\": \"0\",\r",
+									"                        \"Description\": \"No business inputs verified on this source\"\r",
+									"                    },\r",
+									"                    {\r",
+									"                        \"Type\": \"BUSDIRECTORIES\",\r",
+									"                        \"Index\": \"0\",\r",
+									"                        \"Description\": \"No business inputs verified on this source\"\r",
+									"                    }\r",
+									"];\r",
+									"\r",
+									"pm.expect(verificationSummaries).to.eql(expectVerificationSummaries);\r",
+									"\r",
+									"});\r",
+									"\r",
+									"// 9=> BusinessToAuthorizedRepLinkIndexes\r",
+									"pm.test(\"Verify  BusinessToAuthorizedRepLinkIndexes\",()=>\r",
+									"{\r",
+									"  //Extract BusinessToAuthorizedRepLinkIndexes\r",
+									"  var bussinessRepLink= jsonData.data.CompanyResults.BusinessToAuthorizedRepLinkIndexes.BusinessToAuthorizedRepLinkIndex;\r",
+									"  //Define Expected BusinessRepLink\r",
+									"  var businessToAuthRepLink=[\r",
+									"    {\r",
+									"        \"InputRepNumber\":\"1\",\r",
+									"        \"Index\":\"0\",\r",
+									"        \"Description\":\"The input authorized rep cannot be linked to the business.\"\r",
+									"    }\r",
+									"  ];\r",
+									"  pm.expect(bussinessRepLink).to.eql(businessToAuthRepLink);\r",
+									"});\r",
+									"// 10=> Compliance:\r",
+									"pm.test(\"Verify Compliance\",()=>{\r",
+									"    \r",
+									"// Extract Compliance \r",
+									"  var compliance= jsonData.data.CompanyResults.Compliance;\r",
+									"\r",
+									"// Define expected Compliance\r",
+									"   var expectedCompliance={\r",
+									"    \"SICCode\": \"7371\",\r",
+									"                \"SICDescription\": \"COMPUTER PROGRAMMING SERVICES\",\r",
+									"                \"SOSFilingName\": \"SATSCHEL GENESIS LLC\",\r",
+									"                \"TimeOnSOS\": \"37\",\r",
+									"                \"SOSStatus\": \"ACTIVE\",\r",
+									"                \"LNStatus\": \"ACTIVE\",\r",
+									"                \"TimeOnPublicRecord\": \"37\",\r",
+									"                \"County\": \"CLARK\",\r",
+									"                \"BusinessFirstSeenYYYY\": \"2021\",\r",
+									"                \"Parent\": {\r",
+									"                    \"BusinessIds\": {\r",
+									"                        \"SeleID\": \"0\",\r",
+									"                        \"OrgID\": \"0\",\r",
+									"                        \"UltID\": \"0\"\r",
+									"                    }\r",
+									"                }\r",
+									"   };\r",
+									"  \r",
+									"  pm.expect(compliance).to.eql(expectedCompliance);\r",
+									"});\r",
+									"\r",
+									"// 11=>Address Risk\r",
+									"pm.test(\"Verify Address Risk\",()=>{\r",
+									"\r",
+									"    // Extract Address Risk\r",
+									"    var addressRisk= jsonData.data.CompanyResults.AddressRisk;\r",
+									"\r",
+									"    //Define expected Address Riask\r",
+									"    var expectedAddressRisk={\r",
+									"        \"AddressIsCMRA\":\"false\"\r",
+									"    };\r",
+									"    pm.expect(addressRisk).to.eql(expectedAddressRisk);\r",
+									"})\r",
+									"// 12=> Schema Validation\r",
+									"var schema = \r",
+									"    {\r",
+									"  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\r",
+									"  \"title\": \"Generated schema for Root\",\r",
+									"  \"type\": \"object\",\r",
+									"  \"properties\": {\r",
+									"    \"message\": {\r",
+									"      \"type\": \"string\"\r",
+									"    },\r",
+									"    \"data\": {\r",
+									"      \"type\": \"object\",\r",
+									"      \"properties\": {\r",
+									"        \"CompanyResults\": {\r",
+									"          \"type\": \"object\",\r",
+									"          \"properties\": {\r",
+									"            \"VerifiedInput\": {\r",
+									"              \"type\": \"object\",\r",
+									"              \"properties\": {\r",
+									"                \"CompanyName\": {\r",
+									"                  \"type\": \"string\"\r",
+									"                }\r",
+									"              },\r",
+									"              \"required\": [\r",
+									"                \"CompanyName\"\r",
+									"              ]\r",
+									"            },\r",
+									"            \"VerificationIndicators\": {\r",
+									"              \"type\": \"object\",\r",
+									"              \"properties\": {\r",
+									"                \"CompanyName\": {\r",
+									"                  \"type\": \"string\"\r",
+									"                },\r",
+									"                \"StreetAddress\": {\r",
+									"                  \"type\": \"string\"\r",
+									"                },\r",
+									"                \"City\": {\r",
+									"                  \"type\": \"string\"\r",
+									"                },\r",
+									"                \"State\": {\r",
+									"                  \"type\": \"string\"\r",
+									"                },\r",
+									"                \"Zip\": {\r",
+									"                  \"type\": \"string\"\r",
+									"                },\r",
+									"                \"Phone\": {\r",
+									"                  \"type\": \"string\"\r",
+									"                },\r",
+									"                \"FEIN\": {\r",
+									"                  \"type\": \"string\"\r",
+									"                }\r",
+									"              },\r",
+									"              \"required\": [\r",
+									"                \"CompanyName\",\r",
+									"                \"StreetAddress\",\r",
+									"                \"City\",\r",
+									"                \"State\",\r",
+									"                \"Zip\",\r",
+									"                \"Phone\",\r",
+									"                \"FEIN\"\r",
+									"              ]\r",
+									"            },\r",
+									"            \"BestInformation\": {\r",
+									"              \"type\": \"object\",\r",
+									"              \"properties\": {\r",
+									"                \"CompanyName\": {\r",
+									"                  \"type\": \"string\"\r",
+									"                },\r",
+									"                \"Address\": {\r",
+									"                  \"type\": \"object\",\r",
+									"                  \"properties\": {\r",
+									"                    \"StreetNumber\": {\r",
+									"                      \"type\": \"string\"\r",
+									"                    },\r",
+									"                    \"StreetName\": {\r",
+									"                      \"type\": \"string\"\r",
+									"                    },\r",
+									"                    \"StreetSuffix\": {\r",
+									"                      \"type\": \"string\"\r",
+									"                    },\r",
+									"                    \"StreetAddress1\": {\r",
+									"                      \"type\": \"string\"\r",
+									"                    },\r",
+									"                    \"City\": {\r",
+									"                      \"type\": \"string\"\r",
+									"                    },\r",
+									"                    \"State\": {\r",
+									"                      \"type\": \"string\"\r",
+									"                    },\r",
+									"                    \"Zip5\": {\r",
+									"                      \"type\": \"string\"\r",
+									"                    },\r",
+									"                    \"Zip4\": {\r",
+									"                      \"type\": \"string\"\r",
+									"                    }\r",
+									"                  },\r",
+									"                  \"required\": [\r",
+									"                    \"StreetNumber\",\r",
+									"                    \"StreetName\",\r",
+									"                    \"StreetSuffix\",\r",
+									"                    \"StreetAddress1\",\r",
+									"                    \"City\",\r",
+									"                    \"State\",\r",
+									"                    \"Zip5\",\r",
+									"                    \"Zip4\"\r",
+									"                  ]\r",
+									"                },\r",
+									"                \"Phone\": {\r",
+									"                  \"type\": \"string\"\r",
+									"                },\r",
+									"                \"FEIN\": {\r",
+									"                  \"type\": \"string\"\r",
+									"                }\r",
+									"              },\r",
+									"              \"required\": [\r",
+									"                \"CompanyName\",\r",
+									"                \"Address\",\r",
+									"                \"Phone\",\r",
+									"                \"FEIN\"\r",
+									"              ]\r",
+									"            },\r",
+									"            \"BusinessIds\": {\r",
+									"              \"type\": \"object\",\r",
+									"              \"properties\": {\r",
+									"                \"DotID\": {\r",
+									"                  \"type\": \"string\"\r",
+									"                },\r",
+									"                \"EmpID\": {\r",
+									"                  \"type\": \"string\"\r",
+									"                },\r",
+									"                \"POWID\": {\r",
+									"                  \"type\": \"string\"\r",
+									"                },\r",
+									"                \"ProxID\": {\r",
+									"                  \"type\": \"string\"\r",
+									"                },\r",
+									"                \"SeleID\": {\r",
+									"                  \"type\": \"string\"\r",
+									"                },\r",
+									"                \"OrgID\": {\r",
+									"                  \"type\": \"string\"\r",
+									"                },\r",
+									"                \"UltID\": {\r",
+									"                  \"type\": \"string\"\r",
+									"                }\r",
+									"              },\r",
+									"              \"required\": [\r",
+									"                \"DotID\",\r",
+									"                \"EmpID\",\r",
+									"                \"POWID\",\r",
+									"                \"ProxID\",\r",
+									"                \"SeleID\",\r",
+									"                \"OrgID\",\r",
+									"                \"UltID\"\r",
+									"              ]\r",
+									"            },\r",
+									"            \"BusinessVerification\": {\r",
+									"              \"type\": \"object\",\r",
+									"              \"properties\": {\r",
+									"                \"Index\": {\r",
+									"                  \"type\": \"string\"\r",
+									"                },\r",
+									"                \"Description\": {\r",
+									"                  \"type\": \"string\"\r",
+									"                }\r",
+									"              },\r",
+									"              \"required\": [\r",
+									"                \"Index\",\r",
+									"                \"Description\"\r",
+									"              ]\r",
+									"            },\r",
+									"            \"RiskIndicators\": {\r",
+									"              \"type\": \"object\",\r",
+									"              \"properties\": {\r",
+									"                \"RiskIndicator\": {\r",
+									"                  \"type\": \"array\",\r",
+									"                  \"items\": {\r",
+									"                    \"type\": \"object\",\r",
+									"                    \"properties\": {\r",
+									"                      \"RiskCode\": {\r",
+									"                        \"type\": \"string\"\r",
+									"                      },\r",
+									"                      \"Description\": {\r",
+									"                        \"type\": \"string\"\r",
+									"                      },\r",
+									"                      \"Sequence\": {\r",
+									"                        \"type\": \"string\"\r",
+									"                      }\r",
+									"                    },\r",
+									"                    \"required\": [\r",
+									"                      \"RiskCode\",\r",
+									"                      \"Description\",\r",
+									"                      \"Sequence\"\r",
+									"                    ]\r",
+									"                  }\r",
+									"                }\r",
+									"              },\r",
+									"              \"required\": [\r",
+									"                \"RiskIndicator\"\r",
+									"              ]\r",
+									"            },\r",
+									"            \"ResidentialBusinesses\": {\r",
+									"              \"type\": \"object\",\r",
+									"              \"properties\": {\r",
+									"                \"ResidentialBusiness\": {\r",
+									"                  \"type\": \"array\",\r",
+									"                  \"items\": {\r",
+									"                    \"type\": \"object\",\r",
+									"                    \"properties\": {\r",
+									"                      \"Indicator\": {\r",
+									"                        \"type\": \"string\"\r",
+									"                      },\r",
+									"                      \"Description\": {\r",
+									"                        \"type\": \"string\"\r",
+									"                      }\r",
+									"                    },\r",
+									"                    \"required\": [\r",
+									"                      \"Indicator\",\r",
+									"                      \"Description\"\r",
+									"                    ]\r",
+									"                  }\r",
+									"                }\r",
+									"              },\r",
+									"              \"required\": [\r",
+									"                \"ResidentialBusiness\"\r",
+									"              ]\r",
+									"            },\r",
+									"            \"VerificationSummaries\": {\r",
+									"              \"type\": \"object\",\r",
+									"              \"properties\": {\r",
+									"                \"VerificationSummary\": {\r",
+									"                  \"type\": \"array\",\r",
+									"                  \"items\": {\r",
+									"                    \"type\": \"object\",\r",
+									"                    \"properties\": {\r",
+									"                      \"Type\": {\r",
+									"                        \"type\": \"string\"\r",
+									"                      },\r",
+									"                      \"Index\": {\r",
+									"                        \"type\": \"string\"\r",
+									"                      },\r",
+									"                      \"Description\": {\r",
+									"                        \"type\": \"string\"\r",
+									"                      }\r",
+									"                    },\r",
+									"                    \"required\": [\r",
+									"                      \"Type\",\r",
+									"                      \"Index\",\r",
+									"                      \"Description\"\r",
+									"                    ]\r",
+									"                  }\r",
+									"                }\r",
+									"              },\r",
+									"              \"required\": [\r",
+									"                \"VerificationSummary\"\r",
+									"              ]\r",
+									"            },\r",
+									"            \"BusinessToAuthorizedRepLinkIndexes\": {\r",
+									"              \"type\": \"object\",\r",
+									"              \"properties\": {\r",
+									"                \"BusinessToAuthorizedRepLinkIndex\": {\r",
+									"                  \"type\": \"array\",\r",
+									"                  \"items\": {\r",
+									"                    \"type\": \"object\",\r",
+									"                    \"properties\": {\r",
+									"                      \"InputRepNumber\": {\r",
+									"                        \"type\": \"string\"\r",
+									"                      },\r",
+									"                      \"Index\": {\r",
+									"                        \"type\": \"string\"\r",
+									"                      },\r",
+									"                      \"Description\": {\r",
+									"                        \"type\": \"string\"\r",
+									"                      }\r",
+									"                    },\r",
+									"                    \"required\": [\r",
+									"                      \"InputRepNumber\",\r",
+									"                      \"Index\",\r",
+									"                      \"Description\"\r",
+									"                    ]\r",
+									"                  }\r",
+									"                }\r",
+									"              },\r",
+									"              \"required\": [\r",
+									"                \"BusinessToAuthorizedRepLinkIndex\"\r",
+									"              ]\r",
+									"            },\r",
+									"            \"Compliance\": {\r",
+									"              \"type\": \"object\",\r",
+									"              \"properties\": {\r",
+									"                \"SICCode\": {\r",
+									"                  \"type\": \"string\"\r",
+									"                },\r",
+									"                \"SICDescription\": {\r",
+									"                  \"type\": \"string\"\r",
+									"                },\r",
+									"                \"SOSFilingName\": {\r",
+									"                  \"type\": \"string\"\r",
+									"                },\r",
+									"                \"TimeOnSOS\": {\r",
+									"                  \"type\": \"string\"\r",
+									"                },\r",
+									"                \"SOSStatus\": {\r",
+									"                  \"type\": \"string\"\r",
+									"                },\r",
+									"                \"LNStatus\": {\r",
+									"                  \"type\": \"string\"\r",
+									"                },\r",
+									"                \"TimeOnPublicRecord\": {\r",
+									"                  \"type\": \"string\"\r",
+									"                },\r",
+									"                \"County\": {\r",
+									"                  \"type\": \"string\"\r",
+									"                },\r",
+									"                \"BusinessFirstSeenYYYY\": {\r",
+									"                  \"type\": \"string\"\r",
+									"                },\r",
+									"                \"Parent\": {\r",
+									"                  \"type\": \"object\",\r",
+									"                  \"properties\": {\r",
+									"                    \"BusinessIds\": {\r",
+									"                      \"type\": \"object\",\r",
+									"                      \"properties\": {\r",
+									"                        \"SeleID\": {\r",
+									"                          \"type\": \"string\"\r",
+									"                        },\r",
+									"                        \"OrgID\": {\r",
+									"                          \"type\": \"string\"\r",
+									"                        },\r",
+									"                        \"UltID\": {\r",
+									"                          \"type\": \"string\"\r",
+									"                        }\r",
+									"                      },\r",
+									"                      \"required\": [\r",
+									"                        \"SeleID\",\r",
+									"                        \"OrgID\",\r",
+									"                        \"UltID\"\r",
+									"                      ]\r",
+									"                    }\r",
+									"                  },\r",
+									"                  \"required\": [\r",
+									"                    \"BusinessIds\"\r",
+									"                  ]\r",
+									"                }\r",
+									"              },\r",
+									"              \"required\": [\r",
+									"                \"SICCode\",\r",
+									"                \"SICDescription\",\r",
+									"                \"SOSFilingName\",\r",
+									"                \"TimeOnSOS\",\r",
+									"                \"SOSStatus\",\r",
+									"                \"LNStatus\",\r",
+									"                \"TimeOnPublicRecord\",\r",
+									"                \"County\",\r",
+									"                \"BusinessFirstSeenYYYY\",\r",
+									"                \"Parent\"\r",
+									"              ]\r",
+									"            },\r",
+									"            \"AddressRisk\": {\r",
+									"              \"type\": \"object\",\r",
+									"              \"properties\": {\r",
+									"                \"AddressIsCMRA\": {\r",
+									"                  \"type\": \"string\"\r",
+									"                }\r",
+									"              },\r",
+									"              \"required\": [\r",
+									"                \"AddressIsCMRA\"\r",
+									"              ]\r",
+									"            },\r",
+									"            \"originalCompanyResult\": {\r",
+									"              \"type\": \"object\",\r",
+									"              \"properties\": {\r",
+									"                \"verificationIndicators\": {\r",
+									"                  \"type\": \"object\",\r",
+									"                  \"properties\": {\r",
+									"                    \"CompanyName\": {\r",
+									"                      \"type\": \"string\"\r",
+									"                    },\r",
+									"                    \"StreetAddress\": {\r",
+									"                      \"type\": \"string\"\r",
+									"                    },\r",
+									"                    \"City\": {\r",
+									"                      \"type\": \"string\"\r",
+									"                    },\r",
+									"                    \"State\": {\r",
+									"                      \"type\": \"string\"\r",
+									"                    },\r",
+									"                    \"Zip\": {\r",
+									"                      \"type\": \"string\"\r",
+									"                    },\r",
+									"                    \"Phone\": {\r",
+									"                      \"type\": \"string\"\r",
+									"                    },\r",
+									"                    \"FEIN\": {\r",
+									"                      \"type\": \"string\"\r",
+									"                    }\r",
+									"                  },\r",
+									"                  \"required\": [\r",
+									"                    \"CompanyName\",\r",
+									"                    \"StreetAddress\",\r",
+									"                    \"City\",\r",
+									"                    \"State\",\r",
+									"                    \"Zip\",\r",
+									"                    \"Phone\",\r",
+									"                    \"FEIN\"\r",
+									"                  ]\r",
+									"                },\r",
+									"                \"businessVerification\": {\r",
+									"                  \"type\": \"object\",\r",
+									"                  \"properties\": {\r",
+									"                    \"Index\": {\r",
+									"                      \"type\": \"string\"\r",
+									"                    },\r",
+									"                    \"Description\": {\r",
+									"                      \"type\": \"string\"\r",
+									"                    }\r",
+									"                  },\r",
+									"                  \"required\": [\r",
+									"                    \"Index\",\r",
+									"                    \"Description\"\r",
+									"                  ]\r",
+									"                }\r",
+									"              },\r",
+									"              \"required\": [\r",
+									"                \"verificationIndicators\",\r",
+									"                \"businessVerification\"\r",
+									"              ]\r",
+									"            }\r",
+									"          },\r",
+									"          \"required\": [\r",
+									"            \"VerifiedInput\",\r",
+									"            \"VerificationIndicators\",\r",
+									"            \"BestInformation\",\r",
+									"            \"BusinessIds\",\r",
+									"            \"BusinessVerification\",\r",
+									"            \"RiskIndicators\",\r",
+									"            \"ResidentialBusinesses\",\r",
+									"            \"VerificationSummaries\",\r",
+									"            \"BusinessToAuthorizedRepLinkIndexes\",\r",
+									"            \"Compliance\",\r",
+									"            \"AddressRisk\",\r",
+									"            \"originalCompanyResult\"\r",
+									"          ]\r",
+									"        },\r",
+									"        \"request_result\": {\r",
+									"          \"type\": \"string\"\r",
+									"        },\r",
+									"        \"AuthorizedRepresentativeResults\": {\r",
+									"          \"type\": \"object\",\r",
+									"          \"properties\": {\r",
+									"            \"Sequence\": {\r",
+									"              \"type\": \"string\"\r",
+									"            },\r",
+									"            \"Name\": {\r",
+									"              \"type\": \"object\",\r",
+									"              \"properties\": {\r",
+									"                \"First\": {\r",
+									"                  \"type\": \"string\"\r",
+									"                },\r",
+									"                \"Last\": {\r",
+									"                  \"type\": \"string\"\r",
+									"                }\r",
+									"              },\r",
+									"              \"required\": [\r",
+									"                \"First\",\r",
+									"                \"Last\"\r",
+									"              ]\r",
+									"            },\r",
+									"            \"RiskIndicator\": {\r",
+									"              \"type\": \"array\",\r",
+									"              \"items\": {\r",
+									"                \"type\": \"object\",\r",
+									"                \"properties\": {\r",
+									"                  \"RiskCode\": {\r",
+									"                    \"type\": \"string\"\r",
+									"                  },\r",
+									"                  \"Description\": {\r",
+									"                    \"type\": \"string\"\r",
+									"                  },\r",
+									"                  \"Sequence\": {\r",
+									"                    \"type\": \"string\"\r",
+									"                  }\r",
+									"                },\r",
+									"                \"required\": [\r",
+									"                  \"RiskCode\",\r",
+									"                  \"Description\",\r",
+									"                  \"Sequence\"\r",
+									"                ]\r",
+									"              }\r",
+									"            },\r",
+									"            \"InputEcho\": {\r",
+									"              \"type\": \"object\",\r",
+									"              \"properties\": {\r",
+									"                \"Sequence\": {\r",
+									"                  \"type\": \"string\"\r",
+									"                },\r",
+									"                \"Name\": {\r",
+									"                  \"type\": \"object\",\r",
+									"                  \"properties\": {\r",
+									"                    \"First\": {\r",
+									"                      \"type\": \"string\"\r",
+									"                    },\r",
+									"                    \"Last\": {\r",
+									"                      \"type\": \"string\"\r",
+									"                    }\r",
+									"                  },\r",
+									"                  \"required\": [\r",
+									"                    \"First\",\r",
+									"                    \"Last\"\r",
+									"                  ]\r",
+									"                }\r",
+									"              },\r",
+									"              \"required\": [\r",
+									"                \"Sequence\",\r",
+									"                \"Name\"\r",
+									"              ]\r",
+									"            },\r",
+									"            \"ComprehensiveVerificationIndex\": {\r",
+									"              \"type\": \"string\"\r",
+									"            }\r",
+									"          },\r",
+									"          \"required\": [\r",
+									"            \"Sequence\",\r",
+									"            \"Name\",\r",
+									"            \"RiskIndicator\",\r",
+									"            \"InputEcho\",\r",
+									"            \"ComprehensiveVerificationIndex\"\r",
+									"          ]\r",
+									"        },\r",
+									"        \"review_status\": {\r",
+									"          \"type\": \"string\"\r",
+									"        },\r",
+									"        \"status\": {\r",
+									"          \"type\": \"string\"\r",
+									"        },\r",
+									"        \"InputEcho\": {\r",
+									"          \"type\": \"object\",\r",
+									"          \"properties\": {\r",
+									"            \"Company\": {\r",
+									"              \"type\": \"object\",\r",
+									"              \"properties\": {\r",
+									"                \"CompanyName\": {\r",
+									"                  \"type\": \"string\"\r",
+									"                },\r",
+									"                \"Address\": {\r",
+									"                  \"type\": \"object\",\r",
+									"                  \"properties\": {\r",
+									"                    \"StreetAddress1\": {\r",
+									"                      \"type\": \"string\"\r",
+									"                    },\r",
+									"                    \"City\": {\r",
+									"                      \"type\": \"string\"\r",
+									"                    },\r",
+									"                    \"State\": {\r",
+									"                      \"type\": \"string\"\r",
+									"                    },\r",
+									"                    \"Zip5\": {\r",
+									"                      \"type\": \"string\"\r",
+									"                    }\r",
+									"                  },\r",
+									"                  \"required\": [\r",
+									"                    \"StreetAddress1\",\r",
+									"                    \"City\",\r",
+									"                    \"State\",\r",
+									"                    \"Zip5\"\r",
+									"                  ]\r",
+									"                },\r",
+									"                \"Phone\": {\r",
+									"                  \"type\": \"string\"\r",
+									"                },\r",
+									"                \"FEIN\": {\r",
+									"                  \"type\": \"string\"\r",
+									"                }\r",
+									"              },\r",
+									"              \"required\": [\r",
+									"                \"CompanyName\",\r",
+									"                \"Address\",\r",
+									"                \"Phone\",\r",
+									"                \"FEIN\"\r",
+									"              ]\r",
+									"            },\r",
+									"            \"AuthorizedRepresentatives\": {\r",
+									"              \"type\": \"object\",\r",
+									"              \"properties\": {\r",
+									"                \"AuthorizedRepresentative\": {\r",
+									"                  \"type\": \"array\",\r",
+									"                  \"items\": {\r",
+									"                    \"type\": \"object\",\r",
+									"                    \"properties\": {\r",
+									"                      \"Sequence\": {\r",
+									"                        \"type\": \"string\"\r",
+									"                      },\r",
+									"                      \"Name\": {\r",
+									"                        \"type\": \"object\",\r",
+									"                        \"properties\": {\r",
+									"                          \"First\": {\r",
+									"                            \"type\": \"string\"\r",
+									"                          },\r",
+									"                          \"Last\": {\r",
+									"                            \"type\": \"string\"\r",
+									"                          }\r",
+									"                        },\r",
+									"                        \"required\": [\r",
+									"                          \"First\",\r",
+									"                          \"Last\"\r",
+									"                        ]\r",
+									"                      },\r",
+									"                      \"UniqueId\": {\r",
+									"                        \"type\": \"string\"\r",
+									"                      }\r",
+									"                    },\r",
+									"                    \"required\": [\r",
+									"                      \"Sequence\",\r",
+									"                      \"Name\",\r",
+									"                      \"UniqueId\"\r",
+									"                    ]\r",
+									"                  }\r",
+									"                }\r",
+									"              },\r",
+									"              \"required\": [\r",
+									"                \"AuthorizedRepresentative\"\r",
+									"              ]\r",
+									"            }\r",
+									"          },\r",
+									"          \"required\": [\r",
+									"            \"Company\",\r",
+									"            \"AuthorizedRepresentatives\"\r",
+									"          ]\r",
+									"        }\r",
+									"      },\r",
+									"      \"required\": [\r",
+									"        \"CompanyResults\",\r",
+									"        \"request_result\",\r",
+									"        \"AuthorizedRepresentativeResults\",\r",
+									"        \"review_status\",\r",
+									"        \"status\",\r",
+									"        \"InputEcho\"\r",
+									"      ]\r",
+									"    }\r",
+									"  },\r",
+									"  \"required\": [\r",
+									"    \"message\",\r",
+									"    \"data\"\r",
+									"  ]\r",
+									"};\r",
+									"pm.test(\"Schema Validate \",()=>{\r",
+									"    pm.expect(tv4.validate(jsonData,schema)).to.be.true;\r",
+									"})\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"provider\": \"LEXIS_NEXIS\",\r\n    \"name\": \"Satschel\",\r\n    \"website\": \"https://satschel.com/\",\r\n    \"fein\": \"866741152\",\r\n    \"linkedInUrl\": \"https://www.linkedin.com/company/Satschel\",\r\n    \"address\": {\r\n        \"street_address1\": \"30,Augusta Canyon Way\",\r\n        \"street_address2\": null,\r\n        \"city\": \"Dubai\",\r\n        \"state\": \"HR\",\r\n        \"postal_code\": \"80341\",\r\n        \"type\": null,\r\n        \"phone\": \"415516179\"\r\n    },\r\n    \"person\": {\r\n        \"firstName\": \"Jani\",\r\n        \"lastName\": \"Tim\"\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.satschel.com/v2/aml/kyb?type=supplemental",
+							"protocol": "https",
+							"host": [
+								"api",
+								"satschel",
+								"com"
+							],
+							"path": [
+								"v2",
+								"aml",
+								"kyb"
+							],
+							"query": [
+								{
+									"key": "type",
+									"value": "supplemental"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2.KYB Reports API",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "",
+								"value": "",
+								"type": "text",
+								"disabled": true
+							},
+							{
+								"key": "",
+								"value": "",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"callbackUrl\": \"https://yourcallbackurl.com\",\r\n    \"companyName\": \"Satschel\",\r\n    \"website\": \"https://www.satschel.com\",\r\n    \"companyAddress\": {\r\n        \"streetAddress1\": \"IMT Mansear\",\r\n        \"streetAddress2\": \"Gurgaon\",\r\n        \"city\": \"Gurgaon\",\r\n        \"state\": \"HR\",\r\n        \"zip\": \"474012\"\r\n    },\r\n    \"phone\": \"976445363\",\r\n    \"ein\": \"345675\",\r\n    \"accountRepresentative\": {\r\n        \"firstName\": \"jay\",\r\n        \"lastName\": \"patel\",\r\n        \"address\": {\r\n            \"streetAddress1\": \"Laxmi Nagar\",\r\n            \"streetAddress2\": \"Uttam Nagar\",\r\n            \"city\": \"New Delhi\",\r\n            \"state\": \"Delhi\",\r\n            \"zip\": \"1100001\"\r\n        },\r\n        \"dateOfBirth\": \"10/04/1990\",\r\n        \"ssnNumber\": \"1234456\",\r\n        \"phone\": \"987654332\"\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.satschel.com/v2/kyb/entity",
+							"protocol": "https",
+							"host": [
+								"api",
+								"satschel",
+								"com"
+							],
+							"path": [
+								"v2",
+								"kyb",
+								"entity"
+							],
+							"query": [
+								{
+									"key": "",
+									"value": null,
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "4.KYC - IDV",
+			"item": [
+				{
+					"name": "KYC - IDV Reports API",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer YOUR_ACCESS_TOKEN",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"frontImage\": \"base64EncodedFrontImage\",\r\n  \"backImage\": \"base64EncodedBackImage\"\r\n//   \"callback\": \"https://example.com/webhook\"\r\n}\r\n\r\n "
+						},
+						"url": {
+							"raw": "https://api.beta.satschel.com/v2/kyc/idv",
+							"protocol": "https",
+							"host": [
+								"api",
+								"beta",
+								"satschel",
+								"com"
+							],
+							"path": [
+								"v2",
+								"kyc",
+								"idv"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "5.KYC - AML",
+			"item": [
+				{
+					"name": "KYB report API",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "frontimage",
+									"type": "file",
+									"src": "postman-cloud:///1ef2d3fa-1182-4b40-bc33-62654706a8d5"
+								},
+								{
+									"key": "backimage",
+									"type": "file",
+									"src": "postman-cloud:///1ef2d3fa-1182-4b40-bc33-62654706a8d5"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://api.satschel.com/v2/kyc/idv",
+							"protocol": "https",
+							"host": [
+								"api",
+								"satschel",
+								"com"
+							],
+							"path": [
+								"v2",
+								"kyc",
+								"idv"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "6.Zelle Payment",
+			"item": [
+				{
+					"name": "1.ZellePayment_Enroll_API",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": " {\r\n   \"name\": \"Jani Tim\",\r\n   \"phone\": \"415-516-1791\",\r\n   \"email\": \"abc@gmail.com\"\r\n }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.satschel.com/v2/biometrics/enroll",
+							"protocol": "https",
+							"host": [
+								"api",
+								"satschel",
+								"com"
+							],
+							"path": [
+								"v2",
+								"biometrics",
+								"enroll"
+							],
+							"query": [
+								{
+									"key": "Bearer",
+									"value": "",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2.Zelle_Payment_Generate_API",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"sender\": {\r\n    \"id\": \"64e3824bd0b452ea835a9f7a\",\r\n    \"phone\": \"4157671241\",\r\n    \"name\": \"John Doe\",\r\n    \"email\": \"abc@gmail.com\"\r\n  },\r\n  \"recipient\": {\r\n    \"id\": \"64e3824bd0b452ea835a9f7a\",\r\n    \"phone\": \"413552423\",\r\n    \"name\": \"Marry Doe\",\r\n    \"email\": \"xyz@gmail.com\"\r\n  },\r\n  \"amount\": \"10.45\",\r\n  \"callbackUrl\": \"https: //www.webhook.site/my-hook/1937193\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.satschel.com/v2/biometrics/generates",
+							"protocol": "https",
+							"host": [
+								"api",
+								"satschel",
+								"com"
+							],
+							"path": [
+								"v2",
+								"biometrics",
+								"generates"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "7.SIMPLICI Sign",
+			"item": [
+				{
+					"name": "1. Upload document",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"data\": {\r\n    \"originalname\": \"sample.pdf\",\r\n    \"size\": 4,\r\n    \"base64File\": \"Provide Base64String\",\r\n    \"extension\": \"pdf\"\r\n  }\r\n}"
+						},
+						"url": {
+							"raw": "https://api.beta.satschel.com/v2/esign/upload?imageUpload=boolean",
+							"protocol": "https",
+							"host": [
+								"api",
+								"beta",
+								"satschel",
+								"com"
+							],
+							"path": [
+								"v2",
+								"esign",
+								"upload"
+							],
+							"query": [
+								{
+									"key": "imageUpload",
+									"value": "boolean",
+									"description": "If you want to upload an image, imageUpload should be true"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2. Create Template",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"",
+									"pm.test(\"Response time is less than 1610ms\", function () {",
+									"  pm.expect(pm.response.responseTime).to.be.below(1610);",
+									"});",
+									"",
+									"",
+									"pm.test(\"Validate the response schema for required fields\", function () {",
+									"    const responseData = pm.response.json();",
+									"    ",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"documentIds\": [\r\n        \"652e322b1c824a3144b5bd18\"\r\n    ],\r\n    \"name\": \"New template\",\r\n    \"headers\": [\r\n        {\r\n            \"name\": \"tab name\",\r\n            \"type\": \"tab type\",\r\n            \"label\": \"tab label\"\r\n        }\r\n    ],\r\n    \"type\": \"basic | overlay\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "text"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.stage.satschel.com/v2/esign/template",
+							"protocol": "https",
+							"host": [
+								"api",
+								"stage",
+								"satschel",
+								"com"
+							],
+							"path": [
+								"v2",
+								"esign",
+								"template"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "3. Template configuration",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"documents\": [\r\n        {\r\n            \"document\": \"652e322b1c824a3144b5bd18\",\r\n            \"tabs\": [\r\n                {\r\n                    \"name\": \"initial\",\r\n                    \"label\": \"Initial\",\r\n                    \"type\": \"initial\",\r\n                    \"source\": \"standard\",\r\n                    \"position\": {\r\n                        \"x\": 1.2222222222222222,\r\n                        \"y\": 1.149064432787912\r\n                    },\r\n                    \"pageNumber\": 1,\r\n                    \"icon\": \"ri-font-size\",\r\n                    \"value\": \"\",\r\n                    \"index\": 1,\r\n                    \"recipientId\": \"652e35b61c824a3144b895ff\",\r\n                    \"metadata\": {\r\n                        \"tooltip\": \"Add your inputs for this field\",\r\n                        \"required\": true,\r\n                        \"editText\": \"Initial\",\r\n                        \"width\": 40,\r\n                        \"height\": 38\r\n                    }\r\n                },\r\n                {\r\n                    \"name\": \"signature\",\r\n                    \"label\": \"Signature\",\r\n                    \"type\": \"signature\",\r\n                    \"source\": \"standard\",\r\n                    \"position\": {\r\n                        \"x\": 2.42320261437908496,\r\n                        \"y\": 2.22171768574336492\r\n                    },\r\n                    \"pageNumber\": 1,\r\n                    \"icon\": \"ri-admin-line\",\r\n                    \"value\": \"\",\r\n                    \"index\": 2,\r\n                    \"recipientId\": \"652e35b61c824a3144b895ff\",\r\n                    \"metadata\": {\r\n                        \"tooltip\": \"Add your inputs for this field\",\r\n                        \"required\": true,\r\n                        \"editText\": \"Signature\",\r\n                        \"width\": 40,\r\n                        \"height\": 38\r\n                    }\r\n                }\r\n            ]\r\n        }\r\n    ],\r\n    \"signOrder\":false,\r\n    \"recipients\":[{ \"action\": \"Needs to sign\",\"title\": \"admin\" }],\r\n    \"name\": \"New Template\",\r\n    \"status\": \"saved\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.stage.satschel.com/v2/esign/template/:templateId",
+							"protocol": "https",
+							"host": [
+								"api",
+								"stage",
+								"satschel",
+								"com"
+							],
+							"path": [
+								"v2",
+								"esign",
+								"template",
+								":templateId"
+							],
+							"variable": [
+								{
+									"key": "templateId",
+									"value": "666fda359d6da57c0b617c97"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "4. Get Template",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"url": {
+							"raw": "https://api.stage.satschel.com/v2/esign/template/:templateId",
+							"protocol": "https",
+							"host": [
+								"api",
+								"stage",
+								"satschel",
+								"com"
+							],
+							"path": [
+								"v2",
+								"esign",
+								"template",
+								":templateId"
+							],
+							"variable": [
+								{
+									"key": "templateId",
+									"value": "666fda359d6da57c0b617c97"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "5. Template-List",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"templateIds\": [\"666fda359d6da57c0b617c98\"]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.stage.satschel.com/v2/esign/template-list",
+							"protocol": "https",
+							"host": [
+								"api",
+								"stage",
+								"satschel",
+								"com"
+							],
+							"path": [
+								"v2",
+								"esign",
+								"template-list"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "6. Delete Template",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "https://api.stage.satschel.com/v2/esign/template/:templateId",
+							"protocol": "https",
+							"host": [
+								"api",
+								"stage",
+								"satschel",
+								"com"
+							],
+							"path": [
+								"v2",
+								"esign",
+								"template",
+								":templateId"
+							],
+							"variable": [
+								{
+									"key": "templateId",
+									"value": "666fda359d6da57c0b617c97"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "7. Create Envelope",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"templateId\": \"666fe2fa9d6da57c0b617eff\",\r\n  \"senderData\": {\r\n    \"fullName\": \"Bhumit kotadiya\",\r\n    \"email\": \"bhumit@qable.io\",\r\n    \"phone\": 7046952075,\r\n    \"testMode\": true\r\n  }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.stage.satschel.com/v2/esign/envelope-multisign?templateId=666fe2fa9d6da57c0b617eff",
+							"protocol": "https",
+							"host": [
+								"api",
+								"stage",
+								"satschel",
+								"com"
+							],
+							"path": [
+								"v2",
+								"esign",
+								"envelope-multisign"
+							],
+							"query": [
+								{
+									"key": "templateId",
+									"value": "666fe2fa9d6da57c0b617eff"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "8.AML",
+			"item": [
+				{
+					"name": "ASM Verifications API Documentation",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Capture The Response Body\r",
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"// Test 1: Check if the response is an object\r",
+									"pm.test(\"Response should be an object\", function() {\r",
+									"    pm.expect(jsonData).to.be.an(\"object\");\r",
+									"});\r",
+									"\r",
+									"// Test 2: Check the Response Body Structure and Presence of key fields\r",
+									"pm.test(\"Response Body  contain expected fields\", function() {\r",
+									"    pm.expect(jsonData).to.have.property(\"message\", \"ok\");\r",
+									"    pm.expect(jsonData).to.have.property(\"data\").that.is.an(\"object\");\r",
+									"    pm.expect(jsonData.data).to.have.property(\"uniqueId\").that.is.a(\"string\");\r",
+									"    pm.expect(jsonData.data).to.have.property(\"caseId\").that.is.a(\"string\");\r",
+									"    pm.expect(jsonData.data).to.have.property(\"caseUrl\").that.is.a(\"string\");\r",
+									"    pm.expect(jsonData.data).to.have.property(\"subCases\").that.is.an(\"array\");\r",
+									"    pm.expect(jsonData.data).to.have.property(\"_id\").that.is.a(\"string\");\r",
+									"    pm.expect(jsonData.data).to.have.property(\"createdAt\").that.is.a(\"string\");\r",
+									"    pm.expect(jsonData.data).to.have.property(\"updatedAt\").that.is.a(\"string\");\r",
+									"    pm.expect(jsonData.data).to.have.property(\"__v\").that.is.a(\"number\");\r",
+									"});\r",
+									"\r",
+									"var schema={\r",
+									"  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\r",
+									"  \"title\": \"Generated schema for Root\",\r",
+									"  \"type\": \"object\",\r",
+									"  \"properties\": {\r",
+									"    \"message\": {\r",
+									"      \"type\": \"string\"\r",
+									"    },\r",
+									"    \"data\": {\r",
+									"      \"type\": \"object\",\r",
+									"      \"properties\": {\r",
+									"        \"uniqueId\": {\r",
+									"          \"type\": \"string\"\r",
+									"        },\r",
+									"        \"caseId\": {\r",
+									"          \"type\": \"string\"\r",
+									"        },\r",
+									"        \"caseUrl\": {\r",
+									"          \"type\": \"string\"\r",
+									"        },\r",
+									"        \"subCases\": {\r",
+									"          \"type\": \"array\",\r",
+									"          \"items\": {\r",
+									"            \"type\": \"object\",\r",
+									"            \"properties\": {\r",
+									"              \"GWL\": {\r",
+									"                \"type\": \"array\",\r",
+									"                \"items\": {}\r",
+									"              }\r",
+									"            },\r",
+									"            \"required\": [\r",
+									"              \"GWL\"\r",
+									"            ]\r",
+									"          }\r",
+									"        },\r",
+									"        \"_id\": {\r",
+									"          \"type\": \"string\"\r",
+									"        },\r",
+									"        \"createdAt\": {\r",
+									"          \"type\": \"string\"\r",
+									"        },\r",
+									"        \"updatedAt\": {\r",
+									"          \"type\": \"string\"\r",
+									"        },\r",
+									"        \"__v\": {\r",
+									"          \"type\": \"number\"\r",
+									"        }\r",
+									"      },\r",
+									"      \"required\": [\r",
+									"        \"uniqueId\",\r",
+									"        \"caseId\",\r",
+									"        \"caseUrl\",\r",
+									"        \"subCases\",\r",
+									"        \"_id\",\r",
+									"        \"createdAt\",\r",
+									"        \"updatedAt\",\r",
+									"        \"__v\"\r",
+									"      ]\r",
+									"    }\r",
+									"  },\r",
+									"  \"required\": [\r",
+									"    \"message\",\r",
+									"    \"data\"\r",
+									"  ]\r",
+									"}\r",
+									"\r",
+									"pm.test(\"Schema Validate \",function(){\r",
+									"    pm.expect(tv4.validate(jsonData,schema)).to.be.true;\r",
+									"})\r",
+									"\r",
+									"\r",
+									"\r",
+									"\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "",
+								"value": "",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Sonu\",\r\n    \"type\": \"DL\",\r\n    \"dob\": \"20/05/2000\",\r\n    \"country\": \"India\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.stage.satschel.com/v2/aml/asm-verifications\n\n",
+							"protocol": "https",
+							"host": [
+								"api",
+								"stage",
+								"satschel",
+								"com"
+							],
+							"path": [
+								"v2",
+								"aml",
+								"asm-verifications\n\n"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "9.Fetch Data via Session IDs(for webhook users)",
+			"item": []
+		},
+		{
+			"name": "10.Inviting Users via QR Code with Simplici APIs",
+			"item": [
+				{
+					"name": "Inviting Users via API",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"users\": {\r\n        \"headers\": [\"First Name\", \"Last Name\", \"Email\", \"Mobile\", \"Country Code\", \"Dollars Invested\"],\r\n        \"rows\": [\r\n                [\"yash\", \"patel\", \"yash43@gmail.com\", \"5551234567\", \"+1\", \"100\"]\r\n        ]\r\n    },\r\n    \"qrId\": \"666c289f315b2cd42be498ca\",\r\n    \"metadata\": {\r\n        \"test\": \"ihyvbhakhs\",\r\n        \"noram\": \"dsdb\"\r\n    },\r\n    \"alerts\": {\r\n        \"email\": true,\r\n        \"text\": false}\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.satschel.com/v2/pipelines/qr-invite",
+							"protocol": "https",
+							"host": [
+								"api",
+								"satschel",
+								"com"
+							],
+							"path": [
+								"v2",
+								"pipelines",
+								"qr-invite"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "11.Webhook",
+			"item": []
+		},
+		{
+			"name": "12.Download session report pdf",
+			"item": [
+				{
+					"name": "Download session report",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"sessionIds\": [\r\n        \"661dae73748bcb30dccbe5be\"\r\n    ],\r\n    \"fileType\": \"pdf\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.satschel.com/v2/pipelines/session-reports",
+							"protocol": "https",
+							"host": [
+								"api",
+								"satschel",
+								"com"
+							],
+							"path": [
+								"v2",
+								"pipelines",
+								"session-reports"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "13.KYB Business Search[V2]",
+			"item": [
+				{
+					"name": "1.KYB_Business_Search_Post",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "\r\n{\r\n    \"firstName\": \"Jay\",\r\n    \"lastName\": \"Shah\",\r\n    \"dateOfBirth\": \"1990-05-23\",\r\n    \"address\": {\r\n        \"street\": \"Laxmi\",\r\n        \"city\": \"Delhi\",\r\n        \"state\": \"Delhi\",\r\n        \"postalCode\": \"110001\",\r\n        \"country\": \"India\"\r\n    },\r\n    \"phone\": \"988-123-8765\",\r\n    \"email\": \"abc@gmail.com\"\r\n}\r\n\r\n\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.satschel.com/v2/kyb/entity-search",
+							"protocol": "https",
+							"host": [
+								"api",
+								"satschel",
+								"com"
+							],
+							"path": [
+								"v2",
+								"kyb",
+								"entity-search"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "14.KYB Enanced Report API Documentation[V2]",
+			"item": [
+				{
+					"name": "1.KYB_Enhanced_Report_API_Documentation",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"company\": {\r\n        \"companyId\": \"914108804\",\r\n        \"requestId\": \"66583a18d50e7b49ffba4324\"\r\n    },\r\n    \"configurations\": {\r\n        \"enhanced\": true\r\n    },\r\n    \"representatives\": [\r\n        {\r\n            \"firstName\": \"Test\",\r\n            \"lastName\": \"last\",\r\n            \"dateOfBirth\": {\r\n                \"year\": \"1942\",\r\n                \"month\": \"11\",\r\n                \"day\": \"21\"\r\n            },\r\n            \"nationalIdNumber\": \"123456789\",\r\n            \"telephone\": \"+141231111\"\r\n        }\r\n    ]\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.satschel.com/v2/kyb/entity",
+							"protocol": "https",
+							"host": [
+								"api",
+								"satschel",
+								"com"
+							],
+							"path": [
+								"v2",
+								"kyb",
+								"entity"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "15.KYB Comprehensive Report API Documentation[V2]",
+			"item": [
+				{
+					"name": "KYB_Comprehensive_Report_API_Documentation",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"company\": {\r\n        \"companyId\": \"914108804\",\r\n        \"requestId\": \"66583a18d50e7b49ffba4324\"\r\n    },\r\n    \"configurations\": {\r\n        \"enhanced\": true,\r\n        \"comprehensive\": true\r\n    },\r\n    \"representatives\": [\r\n        {\r\n            \"firstName\": \"Test\",\r\n            \"lastName\": \"last\",\r\n            \"dateOfBirth\": {\r\n                \"year\": \"1942\",\r\n                \"month\": \"11\",\r\n                \"day\": \"21\"\r\n            },\r\n            \"nationalIdNumber\": \"123456789\",\r\n            \"telephone\": \"+141231111\"\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.satschel.com/v2/kyb/entity",
+							"protocol": "https",
+							"host": [
+								"api",
+								"satschel",
+								"com"
+							],
+							"path": [
+								"v2",
+								"kyb",
+								"entity"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
